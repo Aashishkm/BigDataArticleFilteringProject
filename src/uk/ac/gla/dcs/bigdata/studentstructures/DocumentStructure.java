@@ -15,30 +15,23 @@ public class DocumentStructure implements Serializable {
 	
 	String id; // unique article identifier
 	//String article_url; // url pointing to the online article
-	String title; // article title
-	//String author; // article author
-	//long published_date; // publication date as a unix timestamp (ms)
+
 	List<ContentItem> contents; // the contents of the article body
-	//String type; // type of the article
-	//String source; // news provider
-	
+
 	List<String> tokenizedDocument; //content after it has been modified (tokenized + concatenated) 
 	
-	// private transient TextPreProcessor processor;
+
 	
 	public DocumentStructure() {}
 	
-	public DocumentStructure(String id, String title, List<ContentItem> contents, List<String> tokenizedDocument) {
+	public DocumentStructure(String id, List<ContentItem> contents, List<String> tokenizedDocument) {
 		super();
 		this.id = id;
-		//this.article_url = article_url;
-		this.title = title;
-		//this.author = author;
-		//this.published_date = published_date;
+	
 		this.contents = contents;
+		
 		this.tokenizedDocument = tokenizedDocument; 
-		//this.type = type;
-		//this.source = source;
+
 	}
 
 	public String getId() {
@@ -50,14 +43,7 @@ public class DocumentStructure implements Serializable {
 	}
 
 
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
+	
 
 	public List<ContentItem> getContents() {
 		return contents;

@@ -13,6 +13,8 @@ import uk.ac.gla.dcs.bigdata.providedfunctions.QueryFormaterMap;
 import uk.ac.gla.dcs.bigdata.providedstructures.DocumentRanking;
 import uk.ac.gla.dcs.bigdata.providedstructures.NewsArticle;
 import uk.ac.gla.dcs.bigdata.providedstructures.Query;
+import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentFormatterMap;
+import uk.ac.gla.dcs.bigdata.studentstructures.DocumentStructure;
 
 /**
  * This is the main class where your Spark topology should be specified.
@@ -104,11 +106,26 @@ public class AssessedExercise {
 		
 		List<NewsArticle> documentsList = news.collectAsList();
 		int numberofDocuments = documentsList.size(); 
-		System.out.println("The number of documents is: " + numberofDocuments);
-		String firstDocumentTitle = documentsList.get(1).getTitle();
-		System.out.println("The first document looks like: " + firstDocumentTitle);
+		
+					//System.out.println("The number of documents is: " + numberofDocuments);
+					//String firstDocumentTitle = documentsList.get(1).getTitle();
+					//System.out.println("The first document looks like: " + firstDocumentTitle);
 
 		
+		//Converted NewsArticle to DocumentStructure
+		//content and title are tokenized and concatenated 
+		Dataset<DocumentStructure> document = news.map(new DocumentFormatterMap(), Encoders.bean(DocumentStructure.class)); 
+		
+		List<DocumentStructure> processedDocuments = document.collectAsList();
+		System.out.println("The tokenized form is: " + processedDocuments.get(1).getTokenizedDocument());
+		
+					//int numberofProcessedDocuments = processedDocuments.size(); 
+					//System.out.println("The number of documents is: " + numberofProcessedDocuments);
+					//String firstProcessedDocumentTitle = processedDocuments.get(1).getTitle();
+					//System.out.println("The first document looks like: " + firstProcessedDocumentTitle);
+						
+						
+						
 		
 		return null; // replace this with the the list of DocumentRanking output by your topology
 	}
