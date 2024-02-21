@@ -20,6 +20,9 @@ public class DocumentStructure implements Serializable {
 
 	List<String> tokenizedDocument; //content after it has been modified (tokenized + concatenated) 
 	
+	int documentLength;
+	
+	
 
 	
 	public DocumentStructure() {}
@@ -33,6 +36,17 @@ public class DocumentStructure implements Serializable {
 		this.tokenizedDocument = tokenizedDocument; 
 
 	}
+	
+	public DocumentStructure(String id, List<ContentItem> contents, List<String> tokenizedDocument, int documentLength) {
+		super();
+		this.id = id;
+	
+		this.contents = contents;
+		
+		this.tokenizedDocument = tokenizedDocument; 
+		this.documentLength = documentLength; 
+
+	}
 
 	public String getId() {
 		return id;
@@ -41,9 +55,15 @@ public class DocumentStructure implements Serializable {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-
 	
+	public int getDocumentLength() {
+		return documentLength;
+	}
+
+	public void setDocumentLength(int documentLength) {
+		this.documentLength = documentLength; 
+	}
+
 
 	public List<ContentItem> getContents() {
 		return contents;

@@ -23,6 +23,7 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 	
 		if (processor==null) processor = new TextPreProcessor();
 		
+		int documentLength = 0; 
 		String id = value.getId();
 		String title = value.getTitle(); 
 		List<ContentItem> contents = value.getContents(); //retreiving our content,id and title from NewsArticle
@@ -42,7 +43,6 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 			
 				if (contents.get(i).getSubtype().equals("paragraph")) { //if ContentItem Equals paragraph
 				
-				
 					tokenizedContent = processor.process(contents.get(i).getContent()); //tokenizing content
 				
 					tokenizedDocument.addAll(tokenizedContent); //adding tokenized paragraphs to our document
@@ -50,26 +50,17 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 					paragraphCounter++; //incremenrt paragraphs counter
 				}
 			}
-			
-			
+					
 			if (paragraphCounter == 5) { //if we have 5 paragraphs we don't need anymore content 
 				break; 
 			}
 				
-		
 		}
 		
+		//Calculate the documentLength within this map 
+		documentLength = tokenizedDocument.size(); 
 		
-		
-		//if (contents)
-		
-
-		
-		//short[] queryTermCounts = new short[queryTerms.size()];
-		//for (int i =0; i<queryTerms.size(); i++) queryTermCounts[i] = (short)1;
-	
-		
-		DocumentStructure document = new DocumentStructure(id, contents, tokenizedDocument); 
+		DocumentStructure document = new DocumentStructure(id, contents, tokenizedDocument, documentLength); 
 		
 		return document;
 	}

@@ -8,12 +8,15 @@ import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
+
 import uk.ac.gla.dcs.bigdata.providedfunctions.NewsFormaterMap;
 import uk.ac.gla.dcs.bigdata.providedfunctions.QueryFormaterMap;
 import uk.ac.gla.dcs.bigdata.providedstructures.DocumentRanking;
 import uk.ac.gla.dcs.bigdata.providedstructures.NewsArticle;
 import uk.ac.gla.dcs.bigdata.providedstructures.Query;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentFormatterMap;
+import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentLengthSumReducer;
+import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentStructureToLengthMap;
 import uk.ac.gla.dcs.bigdata.studentstructures.DocumentStructure;
 
 /**
@@ -104,8 +107,8 @@ public class AssessedExercise {
 		//As a first step lets calculate the number of documents (this is pretty easy) 
 		//In theory we could do this with an accumulator later on when we are calculating another parameter 
 		
-		List<NewsArticle> documentsList = news.collectAsList();
-		int numberofDocuments = documentsList.size(); 
+			//List<NewsArticle> documentsList = news.collectAsList();
+			//int numberofDocuments = documentsList.size(); 
 		
 					//System.out.println("The number of documents is: " + numberofDocuments);
 					//String firstDocumentTitle = documentsList.get(1).getTitle();
@@ -113,17 +116,23 @@ public class AssessedExercise {
 
 		
 		//Converted NewsArticle to DocumentStructure
-		//content and title are tokenized and concatenated 
-		Dataset<DocumentStructure> document = news.map(new DocumentFormatterMap(), Encoders.bean(DocumentStructure.class)); 
+		//Content and Title are tokenized and concatenated 
+		//We also have documentLength Calculated as part of our DocumentFormatter
+		Dataset<DocumentStructure> tokenizedDocuments = news.map(new DocumentFormatterMap(), Encoders.bean(DocumentStructure.class)); 
+		List<DocumentStructure> processedDocuments = tokenizedDocuments.collectAsList();
+		System.out.println("The tokenized form is: " + processedDocuments.get(0).getTokenizedDocument());
+		System.out.println("The document length is: " + processedDocuments.get(0).getDocumentLength());
 		
-		List<DocumentStructure> processedDocuments = document.collectAsList();
-		System.out.println("The tokenized form is: " + processedDocuments.get(1).getTokenizedDocument());
+		//int numberofProcessedDocuments = processedDocuments.size(); 
 		
-					//int numberofProcessedDocuments = processedDocuments.size(); 
-					//System.out.println("The number of documents is: " + numberofProcessedDocuments);
-					//String firstProcessedDocumentTitle = processedDocuments.get(1).getTitle();
-					//System.out.println("The first document looks like: " + firstProcessedDocumentTitle);
-						
+		//Calculation for Average Document Length: 
+		//Extract the Document Length 
+		Dataset<Integer> documentLengths = tokenizedDocuments.map(new DocumentStructureToLengthMap(), Encoders.INT());
+		Integer documentLengthSUM = documentLengths.reduce(new DocumentLengthSumReducer());
+		double averageDocumentLength = (1.0*documentLengthSUM)/documentLengths.count(); 
+		
+		
+		System.out.println("The average document length is: " + averageDocumentLength);
 						
 						
 		
