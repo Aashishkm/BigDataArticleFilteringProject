@@ -2,6 +2,10 @@ package uk.ac.gla.dcs.bigdata.studentstructures;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.spark.broadcast.Broadcast;
 
 import uk.ac.gla.dcs.bigdata.providedstructures.ContentItem;
 import uk.ac.gla.dcs.bigdata.providedutilities.TextPreProcessor;
@@ -22,6 +26,8 @@ public class DocumentStructure implements Serializable {
 	
 	int documentLength;
 	
+	Map<String, List<Integer>> termFrequencyDict; 
+	
 	
 
 	
@@ -37,7 +43,7 @@ public class DocumentStructure implements Serializable {
 
 	}
 	
-	public DocumentStructure(String id, List<ContentItem> contents, List<String> tokenizedDocument, int documentLength) {
+	public DocumentStructure(String id, List<ContentItem> contents, List<String> tokenizedDocument, int documentLength, Map<String,List<Integer>> termFrequencyDict) {
 		super();
 		this.id = id;
 	
@@ -45,6 +51,7 @@ public class DocumentStructure implements Serializable {
 		
 		this.tokenizedDocument = tokenizedDocument; 
 		this.documentLength = documentLength; 
+		this.termFrequencyDict = termFrequencyDict; 
 
 	}
 
@@ -79,6 +86,14 @@ public class DocumentStructure implements Serializable {
 
 	public void setTokenizedDocument(List<String> tokenizedDocument) {
 		this.tokenizedDocument = tokenizedDocument;
+	}
+
+	public Map<String, List<Integer>> getTermFrequencyDict() {
+		return termFrequencyDict;
+	}
+
+	public void setTermFrequencyDict(Map<String, List<Integer>> termFrequencyDict) {
+		this.termFrequencyDict = termFrequencyDict;
 	}
 
 

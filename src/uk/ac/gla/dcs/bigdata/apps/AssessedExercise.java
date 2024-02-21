@@ -2,7 +2,11 @@ package uk.ac.gla.dcs.bigdata.apps;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
+
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
@@ -99,7 +103,7 @@ public class AssessedExercise {
 		// Perform an initial conversion from Dataset<Row> to Query and NewsArticle Java objects
 		Dataset<Query> queries = queriesjson.map(new QueryFormaterMap(), Encoders.bean(Query.class)); // this converts each row into a Query
 		Dataset<NewsArticle> news = newsjson.map(new NewsFormaterMap(), Encoders.bean(NewsArticle.class)); // this converts each row into a NewsArticle
-		
+
 		//----------------------------------------------------------------
 		// Your Spark Topology should be defined here
 		//----------------------------------------------------------------
@@ -118,10 +122,17 @@ public class AssessedExercise {
 		//Converted NewsArticle to DocumentStructure
 		//Content and Title are tokenized and concatenated 
 		//We also have documentLength Calculated as part of our DocumentFormatter
-		Dataset<DocumentStructure> tokenizedDocuments = news.map(new DocumentFormatterMap(), Encoders.bean(DocumentStructure.class)); 
+		List<Query> queriesList = queries.collectAsList();
+		Broadcast<List<Query>> broadcastQueries = JavaSparkContext.fromSparkContext(spark.sparkContext()).broadcast(queriesList);
+		DocumentFormatterMap documentFormatterMap = new DocumentFormatterMap(broadcastQueries); 
+		
+		
+		
+		Dataset<DocumentStructure> tokenizedDocuments = news.map(documentFormatterMap, Encoders.bean(DocumentStructure.class)); 
 		List<DocumentStructure> processedDocuments = tokenizedDocuments.collectAsList();
 		System.out.println("The tokenized form is: " + processedDocuments.get(0).getTokenizedDocument());
 		System.out.println("The document length is: " + processedDocuments.get(0).getDocumentLength());
+		System.out.println("The term frequency Dict for the first document is : " + processedDocuments.get(0).getTermFrequencyDict());
 		
 		//int numberofProcessedDocuments = processedDocuments.size(); 
 		
@@ -133,7 +144,7 @@ public class AssessedExercise {
 		
 		
 		System.out.println("The average document length is: " + averageDocumentLength);
-						
+			
 						
 		
 		return null; // replace this with the the list of DocumentRanking output by your topology

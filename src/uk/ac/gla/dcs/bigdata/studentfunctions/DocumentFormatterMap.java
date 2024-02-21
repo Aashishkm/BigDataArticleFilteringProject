@@ -1,22 +1,40 @@
 package uk.ac.gla.dcs.bigdata.studentfunctions;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.spark.api.java.function.MapFunction;
 //import org.apache.spark.sql.Row;
+import org.apache.spark.broadcast.Broadcast;
+import org.apache.spark.sql.Dataset;
 
 
 import uk.ac.gla.dcs.bigdata.providedstructures.ContentItem;
 import uk.ac.gla.dcs.bigdata.providedstructures.NewsArticle;
+import uk.ac.gla.dcs.bigdata.providedstructures.Query;
 //import uk.ac.gla.dcs.bigdata.providedstructures.Query;
 import uk.ac.gla.dcs.bigdata.providedutilities.TextPreProcessor;
 import uk.ac.gla.dcs.bigdata.studentstructures.DocumentStructure;
+
 
 public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStructure> {
 	
 	private static final long serialVersionUID = 6475166483071609772L;
 
 	private transient TextPreProcessor processor;
+	
+	Broadcast<List<Query>> broadcastQueries;
+	
+	public DocumentFormatterMap(Broadcast<List<Query>> broadcastQueries) {
+		this.broadcastQueries = broadcastQueries; 
+		
+	}
+	
+	
 	
 	@Override
 	public DocumentStructure call(NewsArticle value) throws Exception {
@@ -56,11 +74,33 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 			}
 				
 		}
+		//Calculate the term frequency for each term? 
+		List<Query> queries = broadcastQueries.getValue(); 
+		List<String> terms;  
+		Map<String, List<Integer>> termFrequencyDict = new HashMap<>(); 
+		List<Integer> termsList = new ArrayList<>(); 
+
+		
+		for (int i = 0; i < queries.size(); i++) {
+			terms = queries.get(i).getQueryTerms(); 
+			for (int j = 0; j < terms.size(); j++) {
+				int termFrequency = Collections.frequency(tokenizedDocument, terms.get(j)); //using built in collections method 
+				System.out.println(termFrequency);
+				termsList.add(termFrequency); 	 	
+			}
+			
+			termFrequencyDict.put(queries.get(i).getOriginalQuery(), termsList);
+			termsList.clear(); 
+
+		}
+		
+		
+		
 		
 		//Calculate the documentLength within this map 
 		documentLength = tokenizedDocument.size(); 
 		
-		DocumentStructure document = new DocumentStructure(id, contents, tokenizedDocument, documentLength); 
+		DocumentStructure document = new DocumentStructure(id, contents, tokenizedDocument, documentLength, termFrequencyDict); 
 		
 		return document;
 	}
