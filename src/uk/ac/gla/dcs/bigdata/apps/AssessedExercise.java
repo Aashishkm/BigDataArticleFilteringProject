@@ -102,9 +102,12 @@ public class AssessedExercise {
 		//As a first step lets calculate the number of documents (this is pretty easy) 
 		//In theory we could do this with an accumulator later on when we are calculating another parameter 
 		
-		List<NewsArticle> numberofDocumentsList = news.collectAsList();
-		int numberofDocuments = numberofDocumentsList.size(); 
-		System.out.println("The number of documents is " + numberofDocuments);
+		List<NewsArticle> documentsList = news.collectAsList();
+		int numberofDocuments = documentsList.size(); 
+		System.out.println("The number of documents is: " + numberofDocuments);
+		String firstDocumentTitle = documentsList.get(1).getTitle();
+		System.out.println("The first document looks like: " + firstDocumentTitle);
+
 		
 		
 		return null; // replace this with the the list of DocumentRanking output by your topology
