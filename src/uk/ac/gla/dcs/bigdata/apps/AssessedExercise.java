@@ -113,35 +113,21 @@ public class AssessedExercise {
 		//----------------------------------------------------------------
 		// Your Spark Topology should be defined here
 		//----------------------------------------------------------------
-		
-		/*List<Query> queriesList = queries.collectAsList();
-		for(int i = 0; i < queriesList.size(); i++) {
-			queriesList.get(i).getQueryTerms(); 
-		}*/
-  //As a first step lets calculate the number of documents (this is pretty easy) 
-		//In theory we could do this with an accumulator later on when we are calculating another parameter 
-		
-		//List<NewsArticle> documentsList = news.collectAsList();
-		//int numberofDocuments = documentsList.size(); 
-			//System.out.println("The number of documents is: " + numberofDocuments);
 
+		//Collecting the queries to use as a broadcast variable throughout our program
 		
-		
-  //Converted NewsArticle to DocumentStructure
-		//Content and Title are tokenized and concatenated 
-		//We also have documentLength Calculated as part of our DocumentFormatter
 		List<Query> queriesList = queries.collectAsList();
 		Broadcast<List<Query>> broadcastQueries = JavaSparkContext.fromSparkContext(spark.sparkContext()).broadcast(queriesList);
+		
+		
+    //Converted NewsArticle to DocumentStructure
+        //Content and Title are tokenized and concatenated 
+	//Calculation for each Documents Length is also in here 
+	//Calculation for individual term frequencies is also in here 
 		DocumentFormatterMap documentFormatterMap = new DocumentFormatterMap(broadcastQueries); 
 		Dataset<DocumentStructure> tokenizedDocuments = news.map(documentFormatterMap, Encoders.bean(DocumentStructure.class)); 
-		List<DocumentStructure> processedDocuments = tokenizedDocuments.collectAsList();
-				
-		System.out.println("The document length is: " + processedDocuments.get(0).getDocumentLength());
-		/*for (int i = 0; i < processedDocuments.size(); i++) {  
-			System.out.println("The term frequency Dict for the " +  i + "  document is : " + processedDocuments.get(i).getTermFrequencyDict());
-		}*/
-		//System.out.println("The term frequency Dict for the first document is : " + processedDocuments.get(0).getTermFrequencyDict());
 		
+
 		
 		
 	//Calculation for Average Document Length: 
@@ -156,13 +142,24 @@ public class AssessedExercise {
 	//Calculation for Sum of Term Frequencies for all documents			
 		Encoder<TermFrequencyDictStructure> queryListEncoder = Encoders.bean(TermFrequencyDictStructure.class);
 		Dataset<TermFrequencyDictStructure> documentTermFrequencies = tokenizedDocuments.map(new DocumentStructureToTermsMap(), queryListEncoder);
-		List<TermFrequencyDictStructure> termFrequencyStuff = documentTermFrequencies.collectAsList();
-		for (int i = 0; i < termFrequencyStuff.size(); i++) {  
-			System.out.println("The term frequency lolololDict for the " +  i + "  document is : " + termFrequencyStuff.get(i).getQueryTermDict());
-		}
 		TermFrequencyDictStructure termFrequenciesAcrossDocuments = documentTermFrequencies.reduce(new DocumentTermFrequencySumReducer());
-		System.out.println("The sum of a term frequency all the documents is : " + termFrequenciesAcrossDocuments.getQueryTermDict());
+		//System.out.println("The sum of a term frequency all the documents is : " + termFrequenciesAcrossDocuments.getQueryTermDict());
+		
+	//Calculation for nuumber of documents		
+		List<NewsArticle> documentsList = news.collectAsList();
+		
+		int numberofDocuments = documentsList.size(); 
+		
+	//Broadcasting these so we can use them in our dph scorer (these are 2 of the parameters)
+		Broadcast<Double> averageDocumentLengthInCorpus = JavaSparkContext.fromSparkContext(spark.sparkContext()).broadcast(averageDocumentLength);
+		Broadcast<TermFrequencyDictStructure> totalTermFrequencyInCorpus = JavaSparkContext.fromSparkContext(spark.sparkContext()).broadcast(termFrequenciesAcrossDocuments);
+		
+		
+		
+		
+		
 		return null; // replace this with the the list of DocumentRanking output by your topology
+		
 	}
 	
 	
