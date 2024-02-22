@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.spark.broadcast.Broadcast;
 
 import uk.ac.gla.dcs.bigdata.providedstructures.ContentItem;
+import uk.ac.gla.dcs.bigdata.providedstructures.NewsArticle;
 import uk.ac.gla.dcs.bigdata.providedutilities.TextPreProcessor;
 
 public class DocumentStructure implements Serializable {
@@ -19,13 +20,9 @@ public class DocumentStructure implements Serializable {
 	
 	String id; // unique article identifier
 	//String article_url; // url pointing to the online article
-
-	List<ContentItem> contents; // the contents of the article body
-
-	List<String> tokenizedDocument; //content after it has been modified (tokenized + concatenated) 
-	
+	List<String> tokenizedDocument; //content after it has been modified (tokenized + concatenated) 	
 	int documentLength;
-	
+	NewsArticle article; 
 	Map<String, List<Integer>> termFrequencyDict; 
 	
 	
@@ -33,22 +30,11 @@ public class DocumentStructure implements Serializable {
 	
 	public DocumentStructure() {}
 	
-	public DocumentStructure(String id, List<ContentItem> contents, List<String> tokenizedDocument) {
+	
+	public DocumentStructure(String id, List<String> tokenizedDocument, int documentLength, Map<String, List<Integer>> termFrequencyDict, NewsArticle article) {
 		super();
 		this.id = id;
-	
-		this.contents = contents;
-		
-		this.tokenizedDocument = tokenizedDocument; 
-
-	}
-	
-	public DocumentStructure(String id, List<ContentItem> contents, List<String> tokenizedDocument, int documentLength, Map<String,List<Integer>> termFrequencyDict) {
-		super();
-		this.id = id;
-	
-		this.contents = contents;
-		
+		this.article = article; 
 		this.tokenizedDocument = tokenizedDocument; 
 		this.documentLength = documentLength; 
 		this.termFrequencyDict = termFrequencyDict; 
@@ -70,15 +56,6 @@ public class DocumentStructure implements Serializable {
 	public void setDocumentLength(int documentLength) {
 		this.documentLength = documentLength; 
 	}
-
-
-	public List<ContentItem> getContents() {
-		return contents;
-	}
-
-	public void setContents(List<ContentItem> contents) {
-		this.contents = contents;
-	}
 	
 	public List<String> getTokenizedDocument() {
 		return tokenizedDocument;
@@ -96,6 +73,14 @@ public class DocumentStructure implements Serializable {
 		this.termFrequencyDict = termFrequencyDict;
 	}
 
+	public NewsArticle getArticle() {
+		return article;
+	}
+
+	public void setArticle(NewsArticle article) {
+		this.article = article;
+	}
+  
 
 
 }

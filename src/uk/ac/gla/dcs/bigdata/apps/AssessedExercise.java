@@ -108,45 +108,44 @@ public class AssessedExercise {
 		// Perform an initial conversion from Dataset<Row> to Query and NewsArticle Java objects
 		Dataset<Query> queries = queriesjson.map(new QueryFormaterMap(), Encoders.bean(Query.class)); // this converts each row into a Query
 		Dataset<NewsArticle> news = newsjson.map(new NewsFormaterMap(), Encoders.bean(NewsArticle.class)); // this converts each row into a NewsArticle
+		
 
 		//----------------------------------------------------------------
 		// Your Spark Topology should be defined here
 		//----------------------------------------------------------------
 		
-		//As a first step lets calculate the number of documents (this is pretty easy) 
+		/*List<Query> queriesList = queries.collectAsList();
+		for(int i = 0; i < queriesList.size(); i++) {
+			queriesList.get(i).getQueryTerms(); 
+		}*/
+  //As a first step lets calculate the number of documents (this is pretty easy) 
 		//In theory we could do this with an accumulator later on when we are calculating another parameter 
 		
-			//List<NewsArticle> documentsList = news.collectAsList();
-			//int numberofDocuments = documentsList.size(); 
-		
-					//System.out.println("The number of documents is: " + numberofDocuments);
-					//String firstDocumentTitle = documentsList.get(1).getTitle();
-					//System.out.println("The first document looks like: " + firstDocumentTitle);
+		//List<NewsArticle> documentsList = news.collectAsList();
+		//int numberofDocuments = documentsList.size(); 
+			//System.out.println("The number of documents is: " + numberofDocuments);
 
 		
-		//Converted NewsArticle to DocumentStructure
+		
+  //Converted NewsArticle to DocumentStructure
 		//Content and Title are tokenized and concatenated 
 		//We also have documentLength Calculated as part of our DocumentFormatter
 		List<Query> queriesList = queries.collectAsList();
 		Broadcast<List<Query>> broadcastQueries = JavaSparkContext.fromSparkContext(spark.sparkContext()).broadcast(queriesList);
 		DocumentFormatterMap documentFormatterMap = new DocumentFormatterMap(broadcastQueries); 
-		
-		
-		
 		Dataset<DocumentStructure> tokenizedDocuments = news.map(documentFormatterMap, Encoders.bean(DocumentStructure.class)); 
 		List<DocumentStructure> processedDocuments = tokenizedDocuments.collectAsList();
-		System.out.println("The tokenized form is: " + processedDocuments.get(0).getTokenizedDocument());
+				
 		System.out.println("The document length is: " + processedDocuments.get(0).getDocumentLength());
 		/*for (int i = 0; i < processedDocuments.size(); i++) {  
 			System.out.println("The term frequency Dict for the first document is : " + processedDocuments.get(i).getTermFrequencyDict());
-		}
-		*/
-		System.out.println("The term frequency Dict for the first document is : " + processedDocuments.get(0).getTermFrequencyDict());
+		}*/
+		//System.out.println("The term frequency Dict for the first document is : " + processedDocuments.get(0).getTermFrequencyDict());
 		
-		//int numberofProcessedDocuments = processedDocuments.size(); 
 		
-		//Calculation for Average Document Length: 
-		//Extract the Document Length 
+		
+	//Calculation for Average Document Length: 
+	    //Extract the Document Length 
 		Dataset<Integer> documentLengths = tokenizedDocuments.map(new DocumentStructureToLengthMap(), Encoders.INT());
 		Integer documentLengthSUM = documentLengths.reduce(new DocumentLengthSumReducer());
 	    double averageDocumentLength = (1.0*documentLengthSUM)/documentLengths.count(); 
@@ -154,7 +153,7 @@ public class AssessedExercise {
 		
 		//System.out.println("The average document length is: " + averageDocumentLength);
 			
-		//Calculation for Sum of Term Frequencies for all documents			
+	//Calculation for Sum of Term Frequencies for all documents			
 		Encoder<QueryStructureList> queryListEncoder = Encoders.bean(QueryStructureList.class);
 		Dataset<QueryStructureList> documentTermFrequencies = tokenizedDocuments.map(new DocumentStructureToTermsMap(), queryListEncoder);
 		QueryStructureList termFrequenciesAcrossDocuments = documentTermFrequencies.reduce(new DocumentTermFrequencySumReducer());

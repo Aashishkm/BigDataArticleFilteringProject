@@ -29,17 +29,21 @@ public class DocumentTermFrequencySumReducer implements ReduceFunction<QueryStru
 		q1 = v1.getQueryTermFrequency();
 		q2 = v2.getQueryTermFrequency();
 		
-		for (String key: q1.keySet()) {
+		for (String key: q1.keySet()) { 
 			q1WithinQueryTerms = q1.get(key); 
 			q2WithinQueryTerms = q2.get(key);
 			
 			for (int i = 0; i < q1WithinQueryTerms.size(); i++) {
-				
-		        //returnWithinQueryTerms.add(q1WithinQueryTerms.get(0) + q2WithinQueryTerms.get(0));
-				int j = 0; 
-				returnWithinQueryTerms.add(j);
-			}	
+				System.out.println("size of q1 is: " + q1WithinQueryTerms.size());
+				System.out.println("size of q2 is: " + q2WithinQueryTerms.size());
+				System.out.println("variable: " + i);
 
+				int sum = (q1WithinQueryTerms.get(i) + q2WithinQueryTerms.get(i));
+		        System.out.println("the sume is: " + sum); 
+		        returnWithinQueryTerms.add(sum);
+				
+			}	
+			
 			returnTermFrequencyList.put(key,returnWithinQueryTerms); 
 			
 		}
@@ -47,6 +51,6 @@ public class DocumentTermFrequencySumReducer implements ReduceFunction<QueryStru
 		QueryStructureList retTermFrequencySUM = new QueryStructureList(returnTermFrequencyList); 
 	
 		return retTermFrequencySUM;
-	}
+	} 
 
 }

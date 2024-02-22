@@ -46,7 +46,6 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 		String title = value.getTitle(); 
 		List<ContentItem> contents = value.getContents(); //retreiving our content,id and title from NewsArticle
 		
-		
 		List<String> tokenizedDocument = null;
 		List<String> tokenizedContent = null; 
 		
@@ -104,7 +103,7 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 		//Calculate the documentLength within this map 
 		documentLength = tokenizedDocument.size(); 
 		
-		DocumentStructure document = new DocumentStructure(id, contents, tokenizedDocument, documentLength, termFrequencyDict); 
+		DocumentStructure document = new DocumentStructure(id, tokenizedDocument, documentLength, termFrequencyDict, value); 
 		
 		return document;
 	}
