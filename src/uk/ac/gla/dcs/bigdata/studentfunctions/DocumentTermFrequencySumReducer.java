@@ -35,8 +35,9 @@ public class DocumentTermFrequencySumReducer implements ReduceFunction<QueryStru
 			
 			for (int i = 0; i < q1WithinQueryTerms.size(); i++) {
 				
-		        returnWithinQueryTerms.add(q1WithinQueryTerms.get(i) + q2WithinQueryTerms.get(i));
-				
+		        //returnWithinQueryTerms.add(q1WithinQueryTerms.get(0) + q2WithinQueryTerms.get(0));
+				int j = 0; 
+				returnWithinQueryTerms.add(j);
 			}	
 
 			returnTermFrequencyList.put(key,returnWithinQueryTerms); 

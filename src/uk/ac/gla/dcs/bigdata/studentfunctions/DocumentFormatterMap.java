@@ -86,14 +86,18 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 			for (int j = 0; j < terms.size(); j++) {
 				int termFrequency = Collections.frequency(tokenizedDocument, terms.get(j)); //using built in collections method 
 				
-				termsList.add(termFrequency); 	 	
+				termsList.add(termFrequency); 
+				
+				
 			}
 			
 			termFrequencyDict.put(queries.get(i).getOriginalQuery(), termsList);
-			termsList.clear(); 
+			
+			termsList = new ArrayList<>(); 
 
 		}
 		
+		//System.out.println(termFrequencyDict);
 		
 		
 		

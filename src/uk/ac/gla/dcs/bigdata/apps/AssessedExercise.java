@@ -135,9 +135,13 @@ public class AssessedExercise {
 		
 		Dataset<DocumentStructure> tokenizedDocuments = news.map(documentFormatterMap, Encoders.bean(DocumentStructure.class)); 
 		List<DocumentStructure> processedDocuments = tokenizedDocuments.collectAsList();
-		//System.out.println("The tokenized form is: " + processedDocuments.get(0).getTokenizedDocument());
-		//System.out.println("The document length is: " + processedDocuments.get(0).getDocumentLength());
-		//System.out.println("The term frequency Dict for the first document is : " + processedDocuments.get(0).getTermFrequencyDict());
+		System.out.println("The tokenized form is: " + processedDocuments.get(0).getTokenizedDocument());
+		System.out.println("The document length is: " + processedDocuments.get(0).getDocumentLength());
+		/*for (int i = 0; i < processedDocuments.size(); i++) {  
+			System.out.println("The term frequency Dict for the first document is : " + processedDocuments.get(i).getTermFrequencyDict());
+		}
+		*/
+		System.out.println("The term frequency Dict for the first document is : " + processedDocuments.get(0).getTermFrequencyDict());
 		
 		//int numberofProcessedDocuments = processedDocuments.size(); 
 		
@@ -145,16 +149,16 @@ public class AssessedExercise {
 		//Extract the Document Length 
 		Dataset<Integer> documentLengths = tokenizedDocuments.map(new DocumentStructureToLengthMap(), Encoders.INT());
 		Integer documentLengthSUM = documentLengths.reduce(new DocumentLengthSumReducer());
-		double averageDocumentLength = (1.0*documentLengthSUM)/documentLengths.count(); 
+	    double averageDocumentLength = (1.0*documentLengthSUM)/documentLengths.count(); 
 		
 		
-		System.out.println("The average document length is: " + averageDocumentLength);
+		//System.out.println("The average document length is: " + averageDocumentLength);
 			
 		//Calculation for Sum of Term Frequencies for all documents			
 		Encoder<QueryStructureList> queryListEncoder = Encoders.bean(QueryStructureList.class);
 		Dataset<QueryStructureList> documentTermFrequencies = tokenizedDocuments.map(new DocumentStructureToTermsMap(), queryListEncoder);
 		QueryStructureList termFrequenciesAcrossDocuments = documentTermFrequencies.reduce(new DocumentTermFrequencySumReducer());
-		System.out.println("The sum of a term frequency for the first document is : " + termFrequenciesAcrossDocuments.getQueryTermFrequency().values());
+		System.out.println("The sum of a term frequency all the documents is : " + termFrequenciesAcrossDocuments.getQueryTermFrequency());
 		return null; // replace this with the the list of DocumentRanking output by your topology
 	}
 	
