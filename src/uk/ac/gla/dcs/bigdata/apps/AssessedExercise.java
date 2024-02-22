@@ -26,7 +26,7 @@ import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentStructureToLengthMap;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentStructureToTermsMap;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentTermFrequencySumReducer;
 import uk.ac.gla.dcs.bigdata.studentstructures.DocumentStructure;
-import uk.ac.gla.dcs.bigdata.studentstructures.QueryStructureList;
+import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencySumDict;
 
 /**
  * This is the main class where your Spark topology should be specified.
@@ -154,9 +154,9 @@ public class AssessedExercise {
 		//System.out.println("The average document length is: " + averageDocumentLength);
 			
 	//Calculation for Sum of Term Frequencies for all documents			
-		Encoder<QueryStructureList> queryListEncoder = Encoders.bean(QueryStructureList.class);
-		Dataset<QueryStructureList> documentTermFrequencies = tokenizedDocuments.map(new DocumentStructureToTermsMap(), queryListEncoder);
-		QueryStructureList termFrequenciesAcrossDocuments = documentTermFrequencies.reduce(new DocumentTermFrequencySumReducer());
+		Encoder<TermFrequencySumDict> queryListEncoder = Encoders.bean(TermFrequencySumDict.class);
+		Dataset<TermFrequencySumDict> documentTermFrequencies = tokenizedDocuments.map(new DocumentStructureToTermsMap(), queryListEncoder);
+		TermFrequencySumDict termFrequenciesAcrossDocuments = documentTermFrequencies.reduce(new DocumentTermFrequencySumReducer());
 		System.out.println("The sum of a term frequency all the documents is : " + termFrequenciesAcrossDocuments.getQueryTermFrequency());
 		return null; // replace this with the the list of DocumentRanking output by your topology
 	}

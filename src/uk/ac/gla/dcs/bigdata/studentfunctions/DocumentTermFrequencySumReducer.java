@@ -9,9 +9,9 @@ import java.util.Map;
 
 import org.apache.spark.api.java.function.ReduceFunction;
 
-import uk.ac.gla.dcs.bigdata.studentstructures.QueryStructureList;
+import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencySumDict;
 
-public class DocumentTermFrequencySumReducer implements ReduceFunction<QueryStructureList> {
+public class DocumentTermFrequencySumReducer implements ReduceFunction<TermFrequencySumDict> {
 	
 	private static final long serialVersionUID = 504564822999825225L;
 	
@@ -25,9 +25,9 @@ public class DocumentTermFrequencySumReducer implements ReduceFunction<QueryStru
 	
 
 	@Override
-	public QueryStructureList call(QueryStructureList v1, QueryStructureList v2) throws Exception {
-		q1 = v1.getQueryTermFrequency();
-		q2 = v2.getQueryTermFrequency();
+	public TermFrequencySumDict call(TermFrequencySumDict v1, TermFrequencySumDict v2) throws Exception {
+		q1 = v1.getQueryTermDict();
+		q2 = v2.getQueryTermDict();
 		
 		for (String key: q1.keySet()) { 
 			q1WithinQueryTerms = q1.get(key); 
@@ -38,9 +38,9 @@ public class DocumentTermFrequencySumReducer implements ReduceFunction<QueryStru
 				System.out.println("size of q2 is: " + q2WithinQueryTerms.size());
 				System.out.println("variable: " + i);
 
-				int sum = (q1WithinQueryTerms.get(i) + q2WithinQueryTerms.get(i));
-		        System.out.println("the sume is: " + sum); 
-		        returnWithinQueryTerms.add(sum);
+				// int sum = (q1WithinQueryTerms.get(i) + q2WithinQueryTerms.get(i));
+		        //System.out.println("the sume is: " + sum); 
+		        //returnWithinQueryTerms.add(sum);
 				
 			}	
 			
@@ -48,7 +48,7 @@ public class DocumentTermFrequencySumReducer implements ReduceFunction<QueryStru
 			
 		}
 		
-		QueryStructureList retTermFrequencySUM = new QueryStructureList(returnTermFrequencyList); 
+		TermFrequencySumDict retTermFrequencySUM = new TermFrequencySumDict(returnTermFrequencyList); 
 	
 		return retTermFrequencySUM;
 	} 
