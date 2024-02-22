@@ -25,6 +25,8 @@ import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentLengthSumReducer;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentStructureToLengthMap;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentStructureToTermsMap;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentTermFrequencySumReducer;
+import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentToDPHStructureMap;
+import uk.ac.gla.dcs.bigdata.studentstructures.DPHStructure;
 import uk.ac.gla.dcs.bigdata.studentstructures.DocumentStructure;
 import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencyDictStructure;
 
@@ -148,14 +150,17 @@ public class AssessedExercise {
 	//Calculation for nuumber of documents		
 		List<NewsArticle> documentsList = news.collectAsList();
 		
-		int numberofDocuments = documentsList.size(); 
+		Long numberofDocuments = (long)documentsList.size(); 
 		
 	//Broadcasting these so we can use them in our dph scorer (these are 2 of the parameters)
 		Broadcast<Double> averageDocumentLengthInCorpus = JavaSparkContext.fromSparkContext(spark.sparkContext()).broadcast(averageDocumentLength);
 		Broadcast<TermFrequencyDictStructure> totalTermFrequencyInCorpus = JavaSparkContext.fromSparkContext(spark.sparkContext()).broadcast(termFrequenciesAcrossDocuments);
+		Broadcast<Long> totalDocsInCorpus = JavaSparkContext.fromSparkContext(spark.sparkContext()).broadcast(numberofDocuments);
 		
 		
-		
+	//Now doing the mapping to the structure with the dphScore: 
+		DocumentToDPHStructureMap dphFormatterMap = new DocumentToDPHStructureMap(broadcastQueries, averageDocumentLengthInCorpus,totalTermFrequencyInCorpus, totalDocsInCorpus);
+		Dataset<DPHStructure> dphPreProcessed = tokenizedDocuments.map(dphFormatterMap, Encoders.bean(DPHStructure.class)); 
 		
 		
 		return null; // replace this with the the list of DocumentRanking output by your topology

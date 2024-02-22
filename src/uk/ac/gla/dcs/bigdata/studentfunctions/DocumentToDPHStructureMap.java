@@ -9,11 +9,10 @@ import java.util.Map;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.broadcast.Broadcast;
 
-import uk.ac.gla.dcs.bigdata.providedstructures.ContentItem;
 import uk.ac.gla.dcs.bigdata.providedstructures.NewsArticle;
 import uk.ac.gla.dcs.bigdata.providedstructures.Query;
 import uk.ac.gla.dcs.bigdata.providedutilities.DPHScorer;
-import uk.ac.gla.dcs.bigdata.providedutilities.TextPreProcessor;
+
 import uk.ac.gla.dcs.bigdata.studentstructures.DPHStructure;
 import uk.ac.gla.dcs.bigdata.studentstructures.DocumentStructure;
 import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencyDictStructure;
@@ -24,16 +23,17 @@ public class DocumentToDPHStructureMap implements MapFunction<DocumentStructure,
 	 */
 	private static final long serialVersionUID = -9045059317226215060L;
 
-	private transient DPHScorer scorer;
-	
+
 	Broadcast<List<Query>> broadcastQueries;
 	Broadcast<Double> broadcastAverageDocumentLength;
 	Broadcast<TermFrequencyDictStructure> broadcastTotalTermFrequency;
+	Broadcast<Long> broadcastTotalDocsInCorpus;
 	
-	public DocumentToDPHStructureMap(Broadcast<List<Query>> broadcastQueries,Broadcast<Double> broadcastAverageDocumentLength, Broadcast<TermFrequencyDictStructure> broadcastTotalTermFrequency) {
+	public DocumentToDPHStructureMap(Broadcast<List<Query>> broadcastQueries,Broadcast<Double> broadcastAverageDocumentLength, Broadcast<TermFrequencyDictStructure> broadcastTotalTermFrequency, Broadcast<Long> broadcastTotalDocsInCorpus) {
 		this.broadcastQueries = broadcastQueries; 
 		this.broadcastAverageDocumentLength = broadcastAverageDocumentLength; 
-		this.broadcastTotalTermFrequency = broadcastTotalTermFrequency; 	
+		this.broadcastTotalTermFrequency = broadcastTotalTermFrequency;
+		this.broadcastTotalDocsInCorpus = broadcastTotalDocsInCorpus; 
 	}
 	
 	
@@ -41,22 +41,68 @@ public class DocumentToDPHStructureMap implements MapFunction<DocumentStructure,
 	@Override
 	public DPHStructure call(DocumentStructure value) throws Exception {
 	
-		if (scorer==null) scorer = new DPHScorer();
 		
 		String id = value.getId();
 		NewsArticle article = value.getArticle(); 
+		List<Query> queries = broadcastQueries.getValue();
+		Double averageDocumentLengthInCorpus = broadcastAverageDocumentLength.getValue(); //param 4
+		Long totalDocsInCorpus = broadcastTotalDocsInCorpus.getValue(); //param 5
+		int currentDocumentLength = value.getDocumentLength(); //param 3
+		//have to pass in the specific query terms in the dictionary
+		TermFrequencyDictStructure totalTermFrequency = broadcastTotalTermFrequency.getValue(); 
+		Map<String, List<Integer>> specificTermFrequencyDict = value.getTermFrequencyDict(); 
 		
-		List<Query> queries = broadcastQueries.getValue(); 
+		//return map with scores based on queries 
+		Map<Query, Double> dphScoreDict = new HashMap<>();
+		List<Double> averagingList = new ArrayList<>();
+		List<Integer> allTermFrequencies = new ArrayList<>(); 
+		List<Integer> allTotalTermFrequencies = new ArrayList<>(); 
+		Map<String, List<Integer>> totalTermFrequencyDict = new HashMap<>(); 
 		
-		//for (int i = 0; i < broadcastQueries.size(); )
+		
+		for (int i = 0; i < queries.size(); i++) {
+			List<String> terms = queries.get(i).getQueryTerms(); 
+			String queryKeys = queries.get(i).getOriginalQuery(); //because the keys for our dictionarys are the original string
+			
+			for (int j = 0; j < terms.size(); j++) {
+				
+		
+				
+				allTermFrequencies = specificTermFrequencyDict.get(queryKeys); //getting list of terms
+				
+				short termFrequencyCurrentDocument = allTermFrequencies.get(j).shortValue(); //param1 
+				
+				totalTermFrequencyDict = totalTermFrequency.getQueryTermDict(); //unwrapping class 
+				allTotalTermFrequencies = totalTermFrequencyDict.get(queryKeys); //getting list of terms
+				
+				int totalTermFrequencyInCorpus = allTotalTermFrequencies.get(j); //param2
+						
+				
+				Double preScore = DPHScorer.getDPHScore(termFrequencyCurrentDocument, totalTermFrequencyInCorpus, currentDocumentLength, averageDocumentLengthInCorpus , totalDocsInCorpus);
+				averagingList.add(preScore); 
+			}
+			
+			double adder = 0; 
+			
+			for (int p = 0; p < averagingList.size(); p++) {
+				adder = adder + averagingList.get(p); 			
+			}
+			
+			Double score = adder/averagingList.size();
+			
+			dphScoreDict.put(queries.get(i), score); 
+			
+			averagingList = new ArrayList<>(); 
+			
+		}
 		
 		
 		
 	
 		
-		//DPHStructure dphStruct = new DPHStructure(id, null, null, article); 
+		DPHStructure dphStruct = new DPHStructure(id, article, dphScoreDict); 
 		
-		return null;
+		return dphStruct;
 	}
 
 }

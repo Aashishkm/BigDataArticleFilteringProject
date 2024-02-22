@@ -20,7 +20,7 @@ public class DPHStructure implements Serializable{
 	 //content after it has been modified (tokenized + concatenated) 	
 	// int dphScore; 
 	NewsArticle article;
-	Map<Query, Integer> dphScoreDict; 
+	Map<Query, Double> dphScoreDict; 
 	// Query query; 
 	
 
@@ -29,7 +29,7 @@ public class DPHStructure implements Serializable{
 	}
 	
 	
-	public DPHStructure(String id, NewsArticle article, Map<Query, Integer> dphScoreDict) {
+	public DPHStructure(String id, NewsArticle article, Map<Query, Double> dphScoreDict) {
 		super();
 		this.id = id;
 		this.article = article; 
@@ -62,12 +62,12 @@ public class DPHStructure implements Serializable{
 	}
 
 
-	public Map<Query, Integer> getDphScoreDict() {
+	public Map<Query, Double> getDphScoreDict() {
 		return dphScoreDict;
 	}
 
 
-	public void setDphScoreDict(Map<Query, Integer> dphScoreDict) {
+	public void setDphScoreDict(Map<Query, Double> dphScoreDict) {
 		this.dphScoreDict = dphScoreDict;
 	}
 
