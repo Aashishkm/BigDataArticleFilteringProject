@@ -26,7 +26,7 @@ import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentStructureToLengthMap;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentStructureToTermsMap;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentTermFrequencySumReducer;
 import uk.ac.gla.dcs.bigdata.studentstructures.DocumentStructure;
-import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencySumDict;
+import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencyDictStructure;
 
 /**
  * This is the main class where your Spark topology should be specified.
@@ -138,7 +138,7 @@ public class AssessedExercise {
 				
 		System.out.println("The document length is: " + processedDocuments.get(0).getDocumentLength());
 		/*for (int i = 0; i < processedDocuments.size(); i++) {  
-			System.out.println("The term frequency Dict for the first document is : " + processedDocuments.get(i).getTermFrequencyDict());
+			System.out.println("The term frequency Dict for the " +  i + "  document is : " + processedDocuments.get(i).getTermFrequencyDict());
 		}*/
 		//System.out.println("The term frequency Dict for the first document is : " + processedDocuments.get(0).getTermFrequencyDict());
 		
@@ -154,10 +154,14 @@ public class AssessedExercise {
 		//System.out.println("The average document length is: " + averageDocumentLength);
 			
 	//Calculation for Sum of Term Frequencies for all documents			
-		Encoder<TermFrequencySumDict> queryListEncoder = Encoders.bean(TermFrequencySumDict.class);
-		Dataset<TermFrequencySumDict> documentTermFrequencies = tokenizedDocuments.map(new DocumentStructureToTermsMap(), queryListEncoder);
-		TermFrequencySumDict termFrequenciesAcrossDocuments = documentTermFrequencies.reduce(new DocumentTermFrequencySumReducer());
-		System.out.println("The sum of a term frequency all the documents is : " + termFrequenciesAcrossDocuments.getQueryTermFrequency());
+		Encoder<TermFrequencyDictStructure> queryListEncoder = Encoders.bean(TermFrequencyDictStructure.class);
+		Dataset<TermFrequencyDictStructure> documentTermFrequencies = tokenizedDocuments.map(new DocumentStructureToTermsMap(), queryListEncoder);
+		List<TermFrequencyDictStructure> termFrequencyStuff = documentTermFrequencies.collectAsList();
+		for (int i = 0; i < termFrequencyStuff.size(); i++) {  
+			System.out.println("The term frequency lolololDict for the " +  i + "  document is : " + termFrequencyStuff.get(i).getQueryTermDict());
+		}
+		TermFrequencyDictStructure termFrequenciesAcrossDocuments = documentTermFrequencies.reduce(new DocumentTermFrequencySumReducer());
+		System.out.println("The sum of a term frequency all the documents is : " + termFrequenciesAcrossDocuments.getQueryTermDict());
 		return null; // replace this with the the list of DocumentRanking output by your topology
 	}
 	

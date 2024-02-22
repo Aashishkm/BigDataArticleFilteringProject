@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class TermFrequencySumDict implements Serializable {
+public class TermFrequencyDictStructure implements Serializable {
 	/**
 	 * 
 	 */
@@ -12,9 +12,9 @@ public class TermFrequencySumDict implements Serializable {
 	Map<String, List<Integer>> queryTermDict;
 	
 
-	public TermFrequencySumDict() {}
+	public TermFrequencyDictStructure() {}
 	
-	public TermFrequencySumDict(Map<String, List<Integer>> queryTermDict) {
+	public TermFrequencyDictStructure(Map<String, List<Integer>> queryTermDict) {
 		super();
 		this.queryTermDict = queryTermDict;
 	}

@@ -10,10 +10,10 @@ import org.apache.spark.api.java.function.MapFunction;
 //import com.sun.tools.javac.util.List;
 
 import uk.ac.gla.dcs.bigdata.studentstructures.DocumentStructure;
-import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencySumDict;
+import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencyDictStructure;
 
 //Need to map to a list of frequencies for the upcoming reduce, we are wrapping it in the class queryStructureList 
-public class DocumentStructureToTermsMap implements MapFunction<DocumentStructure, TermFrequencySumDict >{
+public class DocumentStructureToTermsMap implements MapFunction<DocumentStructure, TermFrequencyDictStructure >{
 	
 	
 	/**
@@ -23,10 +23,10 @@ public class DocumentStructureToTermsMap implements MapFunction<DocumentStructur
 	Map<String, List<Integer>> queries = new HashMap<>();
 
 	@Override
-	public TermFrequencySumDict call(DocumentStructure value) throws Exception {
+	public TermFrequencyDictStructure call(DocumentStructure value) throws Exception {
 		
 		queries = value.getTermFrequencyDict(); 
-		TermFrequencySumDict queryList = new TermFrequencySumDict(queries);
+		TermFrequencyDictStructure queryList = new TermFrequencyDictStructure(queries);
 				
 		return queryList;
 	}

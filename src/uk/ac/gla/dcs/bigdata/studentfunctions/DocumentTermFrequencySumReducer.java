@@ -9,9 +9,9 @@ import java.util.Map;
 
 import org.apache.spark.api.java.function.ReduceFunction;
 
-import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencySumDict;
+import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencyDictStructure;
 
-public class DocumentTermFrequencySumReducer implements ReduceFunction<TermFrequencySumDict> {
+public class DocumentTermFrequencySumReducer implements ReduceFunction<TermFrequencyDictStructure> {
 	
 	private static final long serialVersionUID = 504564822999825225L;
 	
@@ -25,30 +25,47 @@ public class DocumentTermFrequencySumReducer implements ReduceFunction<TermFrequ
 	
 
 	@Override
-	public TermFrequencySumDict call(TermFrequencySumDict v1, TermFrequencySumDict v2) throws Exception {
+	public TermFrequencyDictStructure call(TermFrequencyDictStructure v1, TermFrequencyDictStructure v2) throws Exception {
 		q1 = v1.getQueryTermDict();
 		q2 = v2.getQueryTermDict();
+		
+		//System.out.println("Dict of q1 is: " + q1);
+		//System.out.println("Dict of q2 is: " + q2);
+		Boolean check = false; 
 		
 		for (String key: q1.keySet()) { 
 			q1WithinQueryTerms = q1.get(key); 
 			q2WithinQueryTerms = q2.get(key);
 			
+			
 			for (int i = 0; i < q1WithinQueryTerms.size(); i++) {
-				System.out.println("size of q1 is: " + q1WithinQueryTerms.size());
-				System.out.println("size of q2 is: " + q2WithinQueryTerms.size());
-				System.out.println("variable: " + i);
-
-				// int sum = (q1WithinQueryTerms.get(i) + q2WithinQueryTerms.get(i));
-		        //System.out.println("the sume is: " + sum); 
-		        //returnWithinQueryTerms.add(sum);
+				
+				//System.out.println("size of q1 is: " + q1WithinQueryTerms.size());
+				//System.out.println("size of q2 is: " + q2WithinQueryTerms.size());
+				//System.out.println("variable: " + i);
+                //if (q2.)
+				int sum = (q1WithinQueryTerms.get(i) + q2WithinQueryTerms.get(i));
+				
+				//if ((q2WithinQueryTerms.get(i) == null) || (q1WithinQueryTerms.get(i) == null)) {
+				//	sum = 0; 
+				//}
+				//System.out.println("sum variable: " + sum);
+				//System.out.println("sum of q2 is: ");
+				//System.out.println("sum of q2 is: " + q2WithinQueryTerms.get(i));
+		        //System.out.println("sum of q1 is: " + q1WithinQueryTerms.get(i));
+		        returnWithinQueryTerms.add(sum);
 				
 			}	
-			
-			returnTermFrequencyList.put(key,returnWithinQueryTerms); 
-			
+			//System.out.println("Within Query Terms: " + returnWithinQueryTerms);
+			//returnWithinQueryTerms.add(1); 
+			//System.out.println("sum of q2 is: " + returnWithinQueryTerms);
+			returnTermFrequencyList.put(key,returnWithinQueryTerms);
+			//System.out.println(returnTermFrequencyList);
+			returnWithinQueryTerms = new ArrayList<>(); 
+					
 		}
 		
-		TermFrequencySumDict retTermFrequencySUM = new TermFrequencySumDict(returnTermFrequencyList); 
+		TermFrequencyDictStructure retTermFrequencySUM = new TermFrequencyDictStructure(returnTermFrequencyList); 
 	
 		return retTermFrequencySUM;
 	} 
