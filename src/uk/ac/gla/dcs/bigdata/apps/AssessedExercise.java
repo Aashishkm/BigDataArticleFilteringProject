@@ -24,6 +24,7 @@ import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentFormatterMap;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentLengthSumReducer;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentStructureToLengthMap;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentStructureToTermsMap;
+import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentTermFrequencySumReducer;
 import uk.ac.gla.dcs.bigdata.studentstructures.DocumentStructure;
 import uk.ac.gla.dcs.bigdata.studentstructures.QueryStructureList;
 
@@ -152,8 +153,8 @@ public class AssessedExercise {
 		//Calculation for Sum of Term Frequencies for all documents			
 		Encoder<QueryStructureList> queryListEncoder = Encoders.bean(QueryStructureList.class);
 		Dataset<QueryStructureList> documentTermFrequencies = tokenizedDocuments.map(new DocumentStructureToTermsMap(), queryListEncoder);
-		List<QueryStructureList> termFrequenciesAcrossDocuments = documentTermFrequencies.collectAsList();
-		System.out.println("The sum of a term frequency for the first document is : " + termFrequenciesAcrossDocuments.get(0).getQueryTermFrequency());
+		QueryStructureList termFrequenciesAcrossDocuments = documentTermFrequencies.reduce(new DocumentTermFrequencySumReducer());
+		System.out.println("The sum of a term frequency for the first document is : " + termFrequenciesAcrossDocuments.getQueryTermFrequency().values());
 		return null; // replace this with the the list of DocumentRanking output by your topology
 	}
 	

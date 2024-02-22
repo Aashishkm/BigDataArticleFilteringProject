@@ -1,9 +1,14 @@
 package uk.ac.gla.dcs.bigdata.studentstructures;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class QueryStructureList {
+public class QueryStructureList implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3105210442318667494L;
 	Map<String, List<Integer>> queryTermFrequency;
 
 	public QueryStructureList() {}
