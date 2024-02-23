@@ -1,6 +1,7 @@
 package uk.ac.gla.dcs.bigdata.apps;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import uk.ac.gla.dcs.bigdata.providedstructures.DocumentRanking;
 import uk.ac.gla.dcs.bigdata.providedstructures.NewsArticle;
 import uk.ac.gla.dcs.bigdata.providedstructures.Query;
 import uk.ac.gla.dcs.bigdata.providedstructures.RankedResult;
+import uk.ac.gla.dcs.bigdata.providedutilities.TextDistanceCalculator;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DPHStructureToRankedResultMap;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentFormatterMap;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentLengthSumReducer;
@@ -166,7 +168,7 @@ public class AssessedExercise {
 		DocumentToDPHStructureMap dphFormatterMap = new DocumentToDPHStructureMap(broadcastQueries, averageDocumentLengthInCorpus,totalTermFrequencyInCorpus, totalDocsInCorpus);
 		Dataset<DPHStructure> dphPreProcessed = tokenizedDocuments.map(dphFormatterMap, Encoders.bean(DPHStructure.class)); 
 		
-		List<DPHStructure> dphData = dphPreProcessed.collectAsList(); 
+		//List<DPHStructure> dphData = dphPreProcessed.collectAsList(); 
 		/*
 		for (int i = 0; i < dphData.size(); i++) {
 			System.out.println("The scores of the first documents queries are based on the documents is: " + dphData.get(0).getDphScoreDict());
@@ -182,21 +184,56 @@ public class AssessedExercise {
 			}
 		} */
 		
-	//converting DPH structure to RankedResult 
+	//converting DPH structure to RankedResult
+		//using this dictionary to store the top 10 results, then we will map it to final Document Ranking 
+
+		List<DocumentRanking> finalRanks = new ArrayList<>(); 
+		
+		
+		
 		for (int j = 0; j < queriesList.size(); j++) {
 			Broadcast<Query> broadcastIndividualQuery = JavaSparkContext.fromSparkContext(spark.sparkContext()).broadcast(queriesList.get(j));
 			DPHStructureToRankedResultMap rankedResultMap = new DPHStructureToRankedResultMap(broadcastIndividualQuery);
 			Dataset<RankedResult> rankedResultForQuery = dphPreProcessed.map(rankedResultMap, Encoders.bean(RankedResult.class)); 
 			List<RankedResult> dphScorePerQueries = rankedResultForQuery.collectAsList(); 			
-			
+			//Sorting the queries and printing them to make sure that they are correct
 			Collections.sort(dphScorePerQueries);
 			Collections.reverse(dphScorePerQueries);
 			for (int m = 0; m < 10; m++) {
 				System.out.println("The top 10 scores per query " + j + " are: "  + 	dphScorePerQueries.get(m).getScore());
-				System.out.println("hiii");
-
+				//System.out.println("hiii");
 			}
-					}
+			List<RankedResult> outputList = new ArrayList<>(); 
+			DocumentRanking outputListRanked = new DocumentRanking();
+			
+			String comparison; 
+			String current;
+			int first = 0; 
+			int compIndex = 1; 
+			Double textDistance = 100.0; 
+			//add first document no matter what 
+			outputList.add(dphScorePerQueries.get(0));
+			while (outputList.size() < 10) {
+				comparison = dphScorePerQueries.get(first).getArticle().getTitle();
+				current = dphScorePerQueries.get(compIndex).getArticle().getTitle(); 
+				for (int i = compIndex; i == first; i--) {
+					
+				}
+				
+				textDistance = TextDistanceCalculator.similarity(comparison, current); 
+				if (textDistance < 0.5) { 
+						dphScorePerQueries.remove(compIndex); 
+						continue; 
+				}
+				
+			outputList.add(dphScorePerQueries.get(compIndex));
+				
+			}
+			
+			//topTenDict.put(queriesList.get(j), outputList); 
+			//outputList = new ArrayList<>();
+			
+		}
 		
 		//git stuffagainnnnn
 		
