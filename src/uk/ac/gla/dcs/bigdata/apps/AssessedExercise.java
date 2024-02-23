@@ -85,15 +85,15 @@ public class AssessedExercise {
 		
 		// Close the spark session
 		spark.close();
-		
+		System.out.println("Hiiiiiiiii");
 		// Check if the code returned any results
 		if (results==null) System.err.println("Topology return no rankings, student code may not be implemented, skiping final write.");
 		else {
 			
 			// We have set of output rankings, lets write to disk
-			
+			//System.out.println("Hiiiiiiiii");
 			// Create a new folder 
-			File outDirectory = new File("results/"+System.currentTimeMillis());
+			File outDirectory = new File("results/"+ System.currentTimeMillis());
 			if (!outDirectory.exists()) outDirectory.mkdir();
 			
 			// Write the ranking for each query as a new file
@@ -199,10 +199,11 @@ public class AssessedExercise {
 			//Sorting the queries and printing them to make sure that they are correct
 			Collections.sort(dphScorePerQueries);
 			Collections.reverse(dphScorePerQueries);
+			/*
 			for (int m = 0; m < 10; m++) {
 				System.out.println("The top 10 scores per query " + j + " are: "  + 	dphScorePerQueries.get(m).getScore());
 				//System.out.println("hiii");
-			}
+			}*/
 			List<RankedResult> outputList = new ArrayList<>(); 
 			DocumentRanking outputListRanked = new DocumentRanking();
 			
@@ -211,33 +212,42 @@ public class AssessedExercise {
 			int first = 0; 
 			int compIndex = 1; 
 			Double textDistance = 100.0; 
+			Boolean flag = true; 
 			//add first document no matter what 
-			outputList.add(dphScorePerQueries.get(0));
-			while (outputList.size() < 10) {
-				comparison = dphScorePerQueries.get(first).getArticle().getTitle();
+			outputList.add(dphScorePerQueries.get(first));
+			while (outputList.size() < 10) {				
 				current = dphScorePerQueries.get(compIndex).getArticle().getTitle(); 
-				for (int i = compIndex; i == first; i--) {
-					
+				for (int i = compIndex; i == 0; i--) {
+					comparison = dphScorePerQueries.get(i - 1).getArticle().getTitle();
+					textDistance = TextDistanceCalculator.similarity(comparison, current); 
+					if (textDistance < 0.5) { 
+							dphScorePerQueries.remove(compIndex); 
+							flag = false; 
+					}
+				}		
+				if (flag = false) {
+					continue; 
 				}
-				
-				textDistance = TextDistanceCalculator.similarity(comparison, current); 
-				if (textDistance < 0.5) { 
-						dphScorePerQueries.remove(compIndex); 
-						continue; 
-				}
-				
-			outputList.add(dphScorePerQueries.get(compIndex));
-				
+				outputList.add(dphScorePerQueries.get(compIndex));
+				compIndex += 1; 
 			}
-			
-			//topTenDict.put(queriesList.get(j), outputList); 
-			//outputList = new ArrayList<>();
+
+			outputListRanked.setResults(outputList);
+			outputListRanked.setQuery(queriesList.get(j));
+			finalRanks.add(outputListRanked); 
+			outputList = new ArrayList<>();
+			outputListRanked = new DocumentRanking();
 			
 		}
-		
-		//git stuffagainnnnn
-		
-		return null; // replace this with the the list of DocumentRanking output by your topology
+		/*
+		for (int i = 0; i < queriesList.size(); i++) {
+			for (int m = 0; m < 10; m++) {
+				System.out.println("The top 10 scores per query " + i + " are: "  + finalRanks.get(i).getResults().get(m).getScore());
+
+			}
+			System.out.println("hiii");
+		}*/
+		return finalRanks; // replace this with the the list of DocumentRanking output by your topology
 		
 	}
 	
