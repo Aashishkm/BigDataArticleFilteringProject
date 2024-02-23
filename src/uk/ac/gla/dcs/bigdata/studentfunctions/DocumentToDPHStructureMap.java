@@ -76,9 +76,21 @@ public class DocumentToDPHStructureMap implements MapFunction<DocumentStructure,
 				allTotalTermFrequencies = totalTermFrequencyDict.get(queryKeys); //getting list of terms
 				
 				int totalTermFrequencyInCorpus = allTotalTermFrequencies.get(j); //param2
-						
 				
-				Double preScore = DPHScorer.getDPHScore(termFrequencyCurrentDocument, totalTermFrequencyInCorpus, currentDocumentLength, averageDocumentLengthInCorpus , totalDocsInCorpus);
+				
+				if (termFrequencyCurrentDocument == 0) {
+					Double m = 0.0; 
+					averagingList.add(m); 
+					break; 
+				}
+				//System.out.println("Term Frequency for current: " + termFrequencyCurrentDocument);	
+				//System.out.println("total term Frequency: " + totalTermFrequencyInCorpus);
+				//System.out.println("current document legnth: " + currentDocumentLength);
+				//System.out.println("Average document length: " + averageDocumentLengthInCorpus);
+				//System.out.println("Total Documents in Corpus: " + totalDocsInCorpus);
+				
+				Double preScore = DPHScorer.getDPHScore(termFrequencyCurrentDocument, totalTermFrequencyInCorpus, currentDocumentLength, averageDocumentLengthInCorpus, totalDocsInCorpus);
+				//System.out.println("Total corresponding term score is: " + preScore);
 				averagingList.add(preScore); 
 			}
 			
@@ -90,15 +102,19 @@ public class DocumentToDPHStructureMap implements MapFunction<DocumentStructure,
 			
 			Double score = adder/averagingList.size();
 			
-			dphScoreDict.put(queries.get(i), score); 
+			dphScoreDict.put(queries.get(i), score);
+			
+			
 			
 			averagingList = new ArrayList<>(); 
 			
 		}
 		
-		
-		
-	
+		/*
+		for (Double values : dphScoreDict.values()) {
+			System.out.println("Total corresponding term score is: " + values);
+		}
+		*/
 		
 		DPHStructure dphStruct = new DPHStructure(id, article, dphScoreDict); 
 		

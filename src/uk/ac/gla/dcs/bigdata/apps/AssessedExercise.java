@@ -1,7 +1,9 @@
 package uk.ac.gla.dcs.bigdata.apps;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.spark.SparkConf;
@@ -161,6 +163,22 @@ public class AssessedExercise {
 	//Now doing the mapping to the structure with the dphScore: 
 		DocumentToDPHStructureMap dphFormatterMap = new DocumentToDPHStructureMap(broadcastQueries, averageDocumentLengthInCorpus,totalTermFrequencyInCorpus, totalDocsInCorpus);
 		Dataset<DPHStructure> dphPreProcessed = tokenizedDocuments.map(dphFormatterMap, Encoders.bean(DPHStructure.class)); 
+		
+		List<DPHStructure> dphData = dphPreProcessed.collectAsList(); 
+		/*
+		for (int i = 0; i < dphData.size(); i++) {
+			System.out.println("The scores of the first documents queries are based on the documents is: " + dphData.get(0).getDphScoreDict());
+		} */
+		
+		//prints scores for all document to verify we did it correctly
+		
+		Map<Query, Double> dphMap = new HashMap<>();
+		for (int i = 0; i < dphData.size(); i++) {
+			dphMap = dphData.get(i).getDphScoreDict(); 
+			for (Double values : dphMap.values()) {
+				System.out.println("Total corresponding term score for document " + i + " is: " + values);
+			}
+		} 
 		
 		
 		return null; // replace this with the the list of DocumentRanking output by your topology
