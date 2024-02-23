@@ -1,6 +1,7 @@
 package uk.ac.gla.dcs.bigdata.apps;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,24 +173,30 @@ public class AssessedExercise {
 		} */
 		
 		//prints scores for all document to verify we did it correctly
-		
+		/*
 		Map<Query, Double> dphMap = new HashMap<>();
 		for (int i = 0; i < dphData.size(); i++) {
 			dphMap = dphData.get(i).getDphScoreDict(); 
 			for (Double values : dphMap.values()) {
 				System.out.println("Total corresponding term score for document " + i + " is: " + values);
 			}
-		} 
+		} */
 		
 	//converting DPH structure to RankedResult 
 		for (int j = 0; j < queriesList.size(); j++) {
 			Broadcast<Query> broadcastIndividualQuery = JavaSparkContext.fromSparkContext(spark.sparkContext()).broadcast(queriesList.get(j));
 			DPHStructureToRankedResultMap rankedResultMap = new DPHStructureToRankedResultMap(broadcastIndividualQuery);
 			Dataset<RankedResult> rankedResultForQuery = dphPreProcessed.map(rankedResultMap, Encoders.bean(RankedResult.class)); 
-			List<RankedResult> dphScorePerQueries = rankedResultForQuery.collectAsList(); 
+			List<RankedResult> dphScorePerQueries = rankedResultForQuery.collectAsList(); 			
 			
-			
-		}
+			Collections.sort(dphScorePerQueries);
+			Collections.reverse(dphScorePerQueries);
+			for (int m = 0; m < 10; m++) {
+				System.out.println("The top 10 scores per query " + j + " are: "  + 	dphScorePerQueries.get(m).getScore());
+				System.out.println("hiii");
+
+			}
+					}
 		
 		//git stuffagainnnnn
 		
