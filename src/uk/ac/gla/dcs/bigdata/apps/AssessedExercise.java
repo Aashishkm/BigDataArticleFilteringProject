@@ -21,7 +21,8 @@ import uk.ac.gla.dcs.bigdata.providedfunctions.QueryFormaterMap;
 import uk.ac.gla.dcs.bigdata.providedstructures.DocumentRanking;
 import uk.ac.gla.dcs.bigdata.providedstructures.NewsArticle;
 import uk.ac.gla.dcs.bigdata.providedstructures.Query;
-
+import uk.ac.gla.dcs.bigdata.providedstructures.RankedResult;
+import uk.ac.gla.dcs.bigdata.studentfunctions.DPHStructureToRankedResultMap;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentFormatterMap;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentLengthSumReducer;
 import uk.ac.gla.dcs.bigdata.studentfunctions.DocumentStructureToLengthMap;
@@ -180,6 +181,15 @@ public class AssessedExercise {
 			}
 		} 
 		
+	//converting DPH structure to RankedResult 
+		for (int j = 0; j < queriesList.size(); j++) {
+			Broadcast<Query> broadcastIndividualQuery = JavaSparkContext.fromSparkContext(spark.sparkContext()).broadcast(queriesList.get(j));
+			DPHStructureToRankedResultMap rankedResultMap = new DPHStructureToRankedResultMap(broadcastIndividualQuery);
+			Dataset<RankedResult> rankedResultForQuery = dphPreProcessed.map(rankedResultMap, Encoders.bean(RankedResult.class)); 
+			List<RankedResult> dphScorePerQueries = rankedResultForQuery.collectAsList(); 
+			
+			
+		}
 		
 		return null; // replace this with the the list of DocumentRanking output by your topology
 		

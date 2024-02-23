@@ -25,7 +25,6 @@ public class DPHStructure implements Serializable{
 	
 
 	public DPHStructure() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	
