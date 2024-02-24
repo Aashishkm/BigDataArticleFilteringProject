@@ -216,12 +216,11 @@ public class AssessedExercise {
 			Double textDistance = 100.0; 
 			Boolean nullFlag = false; 
 			Boolean flag = true; 
-			//add first document no matter what 
-			
+			//add first document no matter what except if the title is null 
 			while (nullFlag == false) {
-				System.out.println("nullflagggg"); 
+				//System.out.println("nullflagggg"); 
 				if (dphScorePerQueries.get(first).getArticle().getTitle() == null) {
-					System.out.println("Removed: " + dphScorePerQueries.get(first).getArticle().getTitle()); 
+					//System.out.println("Removed: " + dphScorePerQueries.get(first).getArticle().getTitle()); 
 					dphScorePerQueries.remove(first); 
 					
 				} else {
@@ -229,16 +228,23 @@ public class AssessedExercise {
 					nullFlag = true;		
 				}
 			} 
-			System.out.println("Kept: " + dphScorePerQueries.get(first).getArticle().getTitle()); 
-			outputList.add(dphScorePerQueries.get(first)); 
+	
 			
-			while (outputList.size() < 10) {				
-				current = dphScorePerQueries.get(compIndex).getArticle().getTitle(); 
+			while (outputList.size() < 10) {
+				flag = true; 
+				
 				//the for loop checks the current article we want to add for similarity with the previous articles 
-				for (int i = compIndex; i == 0; i--) {
+				System.out.println(compIndex); 
+				for (int i = compIndex; i > 0; i--) {
+					current = dphScorePerQueries.get(compIndex).getArticle().getTitle(); 
+					//System.out.println("i get here"); 
+					System.out.println("variable i: " + i); 
 					comparison = dphScorePerQueries.get(i - 1).getArticle().getTitle();
-					textDistance = TextDistanceCalculator.similarity(comparison, current); 
-					if (textDistance < 0.5 || dphScorePerQueries.get(compIndex).getArticle().getTitle() == null) { 
+					System.out.println("Comparison is: " + comparison + " Current is: " + current); 
+					textDistance = TextDistanceCalculator.similarity(current, comparison); 
+					System.out.println("textDistance is: " + textDistance); 
+					if (textDistance < 0.5 || dphScorePerQueries.get(compIndex).getArticle().getTitle() == null) {
+						    System.out.println("Removed: " + dphScorePerQueries.get(compIndex).getArticle().getTitle()); 
 							dphScorePerQueries.remove(compIndex); 
 							i = i + 1; //make sure index doesn't move if we remove the article for similarity 
 							flag = false; 
