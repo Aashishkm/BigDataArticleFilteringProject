@@ -86,18 +86,20 @@ public class AssessedExercise {
 		// Close the spark session
 		spark.close();
 		System.out.println("Spark session closed");
-		// Check if the code returned any results
+		// Check if the code returned  any results
 		if (results==null) System.err.println("Topology return no rankings, student code may not be implemented, skiping final write.");
 		else {
 			
 			// We have set of output rankings, lets write to disk
-			//System.out.println("Hiiiiiiiii");
+			System.out.println("Hiiiiiiiii");
 			// Create a new folder 
 			File outDirectory = new File("results/"+ System.currentTimeMillis());
-			if (!outDirectory.exists()) outDirectory.mkdir();
+			if (!outDirectory.exists()) outDirectory.mkdirs();
 			
 			// Write the ranking for each query as a new file
 			for (DocumentRanking rankingForQuery : results) {
+				System.out.println("Hiiiiiiiii");
+				System.out.println(outDirectory.getAbsolutePath()); 
 				rankingForQuery.write(outDirectory.getAbsolutePath());
 			}
 		}
@@ -212,16 +214,27 @@ public class AssessedExercise {
 			int first = 0; 
 			int compIndex = 1; 
 			Double textDistance = 100.0; 
+			Boolean nullFlag = false; 
 			Boolean flag = true; 
 			//add first document no matter what 
-			outputList.add(dphScorePerQueries.get(first));
+			while (nullFlag = false) {
+				if (dphScorePerQueries.get(first).getArticle().getTitle() != null) {
+					outputList.add(dphScorePerQueries.get(first));
+					nullFlag = true; 
+					continue; 
+				}
+				dphScorePerQueries.remove(first); 
+			}
+
 			while (outputList.size() < 10) {				
 				current = dphScorePerQueries.get(compIndex).getArticle().getTitle(); 
+				//the for loop checks the current article we want to add for similarity with the previous articles 
 				for (int i = compIndex; i == 0; i--) {
 					comparison = dphScorePerQueries.get(i - 1).getArticle().getTitle();
 					textDistance = TextDistanceCalculator.similarity(comparison, current); 
-					if (textDistance < 0.5) { 
+					if (textDistance < 0.5 || dphScorePerQueries.get(compIndex).getArticle().getTitle() == null) { 
 							dphScorePerQueries.remove(compIndex); 
+							i = i + 1; //make sure index doesn't move if we remove the article for similarity 
 							flag = false; 
 					}
 				}		
