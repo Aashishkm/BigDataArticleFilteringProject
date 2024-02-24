@@ -218,12 +218,13 @@ public class AssessedExercise {
 			Boolean flag = true; 
 			//add first document no matter what 
 			while (nullFlag = false) {
-				if (dphScorePerQueries.get(first).getArticle().getTitle() != null) {
+				if (dphScorePerQueries.get(first).getArticle().getTitle() == null) {
+					dphScorePerQueries.remove(first); 
+					
+				} else {
 					outputList.add(dphScorePerQueries.get(first));
-					nullFlag = true; 
-					continue; 
+					nullFlag = true;		
 				}
-				dphScorePerQueries.remove(first); 
 			}
 
 			while (outputList.size() < 10) {				
