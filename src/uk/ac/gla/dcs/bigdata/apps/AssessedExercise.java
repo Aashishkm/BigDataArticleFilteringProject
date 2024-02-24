@@ -197,7 +197,7 @@ public class AssessedExercise {
 			Broadcast<Query> broadcastIndividualQuery = JavaSparkContext.fromSparkContext(spark.sparkContext()).broadcast(queriesList.get(j));
 			DPHStructureToRankedResultMap rankedResultMap = new DPHStructureToRankedResultMap(broadcastIndividualQuery);
 			Dataset<RankedResult> rankedResultForQuery = dphPreProcessed.map(rankedResultMap, Encoders.bean(RankedResult.class)); 
-			List<RankedResult> dphScorePerQueries = rankedResultForQuery.collectAsList(); 			
+			List<RankedResult> dphScorePerQueries = new ArrayList<RankedResult>(rankedResultForQuery.collectAsList()); // wrapping the list in an arraylist so we can modify it	
 			//Sorting the queries and printing them to make sure that they are correct
 			Collections.sort(dphScorePerQueries);
 			Collections.reverse(dphScorePerQueries);
@@ -217,16 +217,21 @@ public class AssessedExercise {
 			Boolean nullFlag = false; 
 			Boolean flag = true; 
 			//add first document no matter what 
-			while (nullFlag = false) {
+			
+			while (nullFlag == false) {
+				System.out.println("nullflagggg"); 
 				if (dphScorePerQueries.get(first).getArticle().getTitle() == null) {
+					System.out.println("Removed: " + dphScorePerQueries.get(first).getArticle().getTitle()); 
 					dphScorePerQueries.remove(first); 
 					
 				} else {
 					outputList.add(dphScorePerQueries.get(first));
 					nullFlag = true;		
 				}
-			}
-
+			} 
+			System.out.println("Kept: " + dphScorePerQueries.get(first).getArticle().getTitle()); 
+			outputList.add(dphScorePerQueries.get(first)); 
+			
 			while (outputList.size() < 10) {				
 				current = dphScorePerQueries.get(compIndex).getArticle().getTitle(); 
 				//the for loop checks the current article we want to add for similarity with the previous articles 
@@ -239,7 +244,7 @@ public class AssessedExercise {
 							flag = false; 
 					}
 				}		
-				if (flag = false) {
+				if (flag == false) {
 					continue; 
 				}
 				outputList.add(dphScorePerQueries.get(compIndex));
