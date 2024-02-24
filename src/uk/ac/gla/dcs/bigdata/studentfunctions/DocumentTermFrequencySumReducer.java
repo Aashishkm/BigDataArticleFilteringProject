@@ -11,6 +11,9 @@ import org.apache.spark.api.java.function.ReduceFunction;
 
 import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencyDictStructure;
 
+//Reduce operation on term frequency data and aggregating the frequencies of the terms to a map
+//A map with the term, and number of frequencies of the terms.
+
 public class DocumentTermFrequencySumReducer implements ReduceFunction<TermFrequencyDictStructure> {
 	
 	private static final long serialVersionUID = 504564822999825225L;

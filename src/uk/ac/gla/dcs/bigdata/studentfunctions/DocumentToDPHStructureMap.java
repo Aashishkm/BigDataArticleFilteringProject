@@ -19,7 +19,7 @@ import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencyDictStructure;
 
 public class DocumentToDPHStructureMap implements MapFunction<DocumentStructure, DPHStructure>{
     /**
-	 * 
+	 Scoring class using DPHScorer and DPHStructure.
 	 */
 	private static final long serialVersionUID = -9045059317226215060L;
 
@@ -62,7 +62,7 @@ public class DocumentToDPHStructureMap implements MapFunction<DocumentStructure,
 		
 		for (int i = 0; i < queries.size(); i++) {
 			List<String> terms = queries.get(i).getQueryTerms(); 
-			String queryKeys = queries.get(i).getOriginalQuery(); //because the keys for our dictionarys are the original string
+			String queryKeys = queries.get(i).getOriginalQuery(); //because the keys for our dictionaries are the original string
 			
 			for (int j = 0; j < terms.size(); j++) {
 				

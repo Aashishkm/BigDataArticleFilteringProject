@@ -85,7 +85,7 @@ public class AssessedExercise {
 		
 		// Close the spark session
 		spark.close();
-		System.out.println("Hiiiiiiiii");
+		System.out.println("Spark session closed");
 		// Check if the code returned any results
 		if (results==null) System.err.println("Topology return no rankings, student code may not be implemented, skiping final write.");
 		else {
@@ -129,7 +129,7 @@ public class AssessedExercise {
 		
 		
     //Converted NewsArticle to DocumentStructure
-        //Content and Title are tokenized and concatenated 
+    //Content and Title are tokenized and concatenated 
 	//Calculation for each Documents Length is also in here 
 	//Calculation for individual term frequencies is also in here 
 		DocumentFormatterMap documentFormatterMap = new DocumentFormatterMap(broadcastQueries); 
@@ -139,7 +139,7 @@ public class AssessedExercise {
 		
 		
 	//Calculation for Average Document Length: 
-	    //Extract the Document Length 
+	//Extract the Document Length 
 		Dataset<Integer> documentLengths = tokenizedDocuments.map(new DocumentStructureToLengthMap(), Encoders.INT());
 		Integer documentLengthSUM = documentLengths.reduce(new DocumentLengthSumReducer());
 	    double averageDocumentLength = (1.0*documentLengthSUM)/documentLengths.count(); 
@@ -153,7 +153,7 @@ public class AssessedExercise {
 		TermFrequencyDictStructure termFrequenciesAcrossDocuments = documentTermFrequencies.reduce(new DocumentTermFrequencySumReducer());
 		//System.out.println("The sum of a term frequency all the documents is : " + termFrequenciesAcrossDocuments.getQueryTermDict());
 		
-	//Calculation for nuumber of documents		
+	//Calculation for number of documents		
 		List<NewsArticle> documentsList = news.collectAsList();
 		
 		Long numberofDocuments = (long)documentsList.size(); 

@@ -6,9 +6,11 @@ import java.util.Map;
 
 public class TermFrequencyDictStructure implements Serializable {
 	/**
-	 * 
+	  Simple structure for managing term frequencies.
 	 */
 	private static final long serialVersionUID = -3105210442318667494L;
+	
+	//Store the frequency of each term in a document or some other context.
 	Map<String, List<Integer>> queryTermDict;
 	
 

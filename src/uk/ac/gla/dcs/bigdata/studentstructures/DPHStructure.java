@@ -11,7 +11,7 @@ import uk.ac.gla.dcs.bigdata.providedstructures.Query;
 
 public class DPHStructure implements Serializable{
 	/**
-	 * 
+	 Structure for the DPH scorehaving the id, article, a score map with query and score.
 	 */
 	private static final long serialVersionUID = 4517819071539280730L;
 	

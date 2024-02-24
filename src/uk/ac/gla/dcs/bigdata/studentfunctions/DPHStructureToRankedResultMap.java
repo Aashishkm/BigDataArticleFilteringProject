@@ -12,7 +12,7 @@ import uk.ac.gla.dcs.bigdata.studentstructures.DPHStructure;
 public class DPHStructureToRankedResultMap implements MapFunction<DPHStructure, RankedResult> {
 
 	/**
-	 * 
+	  Output ranked result of articles based on the score for a given query 
 	 */
 	private static final long serialVersionUID = 2472120668545383514L;
 	Broadcast<Query> broadcastIndividualQuery; 

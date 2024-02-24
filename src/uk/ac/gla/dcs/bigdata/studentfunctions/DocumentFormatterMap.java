@@ -34,7 +34,8 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 		
 	}
 	
-	
+	// Pre-processing of documents and queries  using provided TextPreProcessor
+	//Tokenizing and 'title' and 'content'
 	
 	@Override
 	public DocumentStructure call(NewsArticle value) throws Exception {

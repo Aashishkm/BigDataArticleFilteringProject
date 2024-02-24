@@ -12,7 +12,7 @@ import org.apache.spark.api.java.function.MapFunction;
 import uk.ac.gla.dcs.bigdata.studentstructures.DocumentStructure;
 import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencyDictStructure;
 
-//Need to map to a list of frequencies for the upcoming reduce, we are wrapping it in the class queryStructureList 
+//Map to a list of frequencies for the upcoming reduce, we are wrapping it in the class queryStructureList 
 public class DocumentStructureToTermsMap implements MapFunction<DocumentStructure, TermFrequencyDictStructure >{
 	
 	
