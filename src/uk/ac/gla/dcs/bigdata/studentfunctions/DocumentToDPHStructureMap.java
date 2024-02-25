@@ -81,7 +81,7 @@ public class DocumentToDPHStructureMap implements MapFunction<DocumentStructure,
 				if (termFrequencyCurrentDocument == 0) {
 					Double m = 0.0; 
 					averagingList.add(m); 
-					break; 
+					continue; 
 				}
 				//System.out.println("Term Frequency for current: " + termFrequencyCurrentDocument);	
 				//System.out.println("total term Frequency: " + totalTermFrequencyInCorpus);

@@ -56,8 +56,11 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 		int paragraphCounter = 0; 
 		
 		for (int i = 0; i < contents.size(); i++) { //checking through ContentItem
+			if (contents.get(i) == null) {
+				continue; 
+			}
 			
-			if (contents.get(i).getSubtype()!= null) {
+			if (contents.get(i).getSubtype() != null) {
 			
 				if (contents.get(i).getSubtype().equals("paragraph")) { //if ContentItem Equals paragraph
 				
