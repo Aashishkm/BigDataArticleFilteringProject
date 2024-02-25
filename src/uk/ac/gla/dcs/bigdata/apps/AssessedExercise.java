@@ -92,15 +92,14 @@ public class AssessedExercise {
 		else {
 			
 			// We have set of output rankings, lets write to disk
-			System.out.println("Hiiiiiiiii");
 			// Create a new folder 
 			File outDirectory = new File("results/"+ System.currentTimeMillis());
 			if (!outDirectory.exists()) outDirectory.mkdirs();
 			
 			// Write the ranking for each query as a new file
 			for (DocumentRanking rankingForQuery : results) {
-				System.out.println("Hiiiiiiiii");
-				System.out.println(outDirectory.getAbsolutePath()); 
+			
+				
 				rankingForQuery.write(outDirectory.getAbsolutePath());
 			}
 		}
@@ -144,14 +143,22 @@ public class AssessedExercise {
 		DocumentFormatterMap documentFormatterMap = new DocumentFormatterMap(broadcastQueries, numberofDocumentsAccumulator); 
 		Dataset<DocumentStructure> tokenizedDocuments = news.map(documentFormatterMap, Encoders.bean(DocumentStructure.class)); 
 	
-
+		
 		
 	//Calculation for Average Document Length: 
 	//Extract the Document Length 
 		Dataset<Integer> documentLengths = tokenizedDocuments.map(new DocumentStructureToLengthMap(), Encoders.INT());
 		Integer documentLengthSUM = documentLengths.reduce(new DocumentLengthSumReducer());
+		
+		//Retrieving number of documents after accumulator 
+	  	long numberofDocuments = numberofDocumentsAccumulator.value(); 
+	  	System.out.println("Accumulator: "+ numberofDocuments); 
+	  	
+	  	
 	    double averageDocumentLength = (1.0*documentLengthSUM)/documentLengths.count(); 
 		
+	  
+	  		
 		
 		//System.out.println("The average document length is: " + averageDocumentLength);
 			
@@ -161,8 +168,6 @@ public class AssessedExercise {
 		TermFrequencyDictStructure termFrequenciesAcrossDocuments = documentTermFrequencies.reduce(new DocumentTermFrequencySumReducer());
 		//System.out.println("The sum of a term frequency all the documents is : " + termFrequenciesAcrossDocuments.getQueryTermDict());
 		
-		//Retrieving number of documents after accumulator 
-		long numberofDocuments = numberofDocumentsAccumulator.value(); 
 		
 			
 		
@@ -240,17 +245,17 @@ public class AssessedExercise {
 				flag = true; 
 				
 				//the for loop checks the current article we want to add for similarity with the previous articles 
-				System.out.println(compIndex); 
+				//System.out.println(compIndex); 
 				for (int i = compIndex; i > 0; i--) {
 					current = dphScorePerQueries.get(compIndex).getArticle().getTitle(); 
 					//System.out.println("i get here"); 
-					System.out.println("variable i: " + i); 
+					//System.out.println("variable i: " + i); 
 					comparison = dphScorePerQueries.get(i - 1).getArticle().getTitle();
-					System.out.println("Comparison is: " + comparison + " Current is: " + current); 
+					//System.out.println("Comparison is: " + comparison + " Current is: " + current); 
 					textDistance = TextDistanceCalculator.similarity(current, comparison); 
-					System.out.println("textDistance is: " + textDistance); 
+					//System.out.println("textDistance is: " + textDistance); 
 					if (textDistance < 0.5 || dphScorePerQueries.get(compIndex).getArticle().getTitle() == null) {
-						    System.out.println("Removed: " + dphScorePerQueries.get(compIndex).getArticle().getTitle()); 
+						   // System.out.println("Removed: " + dphScorePerQueries.get(compIndex).getArticle().getTitle()); 
 							dphScorePerQueries.remove(compIndex); 
 							i = i + 1; //make sure index doesn't move if we remove the article for similarity 
 							flag = false; 
