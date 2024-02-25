@@ -11,7 +11,7 @@ public class DocumentStructureToLengthMap implements MapFunction<DocumentStructu
 	 * 
 	 */
 	private static final long serialVersionUID = -7053269391712990313L;
-
+	
 	@Override
 	public Integer call(DocumentStructure value) throws Exception {
 		return value.getDocumentLength();

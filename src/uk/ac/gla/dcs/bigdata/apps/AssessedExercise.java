@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.spark.util.LongAccumulator;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -78,7 +79,7 @@ public class AssessedExercise {
 		
 		// Get the location of the input news articles
 		String newsFile = System.getenv("bigdata.news");
-		if (newsFile==null) newsFile = "data/TREC_Washington_Post_collection.v2.jl.fix.json"; // default is a sample of 5000 news articles
+		if (newsFile==null) newsFile = "data/TREC_Washington_Post_collection.v3.example.json"; // default is a sample of 5000 news articles
 		
 		// Call the student's code
 		List<DocumentRanking> results = rankDocuments(spark, queryFile, newsFile);
@@ -130,15 +131,20 @@ public class AssessedExercise {
 		Broadcast<List<Query>> broadcastQueries = JavaSparkContext.fromSparkContext(spark.sparkContext()).broadcast(queriesList);
 		
 		
-    //Converted NewsArticle to DocumentStructure
-    //Content and Title are tokenized and concatenated 
-	//Calculation for each Documents Length is also in here 
-	//Calculation for individual term frequencies is also in here 
-		DocumentFormatterMap documentFormatterMap = new DocumentFormatterMap(broadcastQueries); 
-		Dataset<DocumentStructure> tokenizedDocuments = news.map(documentFormatterMap, Encoders.bean(DocumentStructure.class)); 
-		
 
 		
+	//Accumulator for number of documents	
+		LongAccumulator numberofDocumentsAccumulator = spark.sparkContext().longAccumulator(); 
+		
+	
+	//Converting NewsArticle to DocumentStructure
+	//Content and Title are tokenized and concatenated 
+	//Calculation for each Documents Length is also in here 
+	//Calculation for individual term frequencies per query is also in here 
+		DocumentFormatterMap documentFormatterMap = new DocumentFormatterMap(broadcastQueries, numberofDocumentsAccumulator); 
+		Dataset<DocumentStructure> tokenizedDocuments = news.map(documentFormatterMap, Encoders.bean(DocumentStructure.class)); 
+	
+
 		
 	//Calculation for Average Document Length: 
 	//Extract the Document Length 
@@ -155,10 +161,10 @@ public class AssessedExercise {
 		TermFrequencyDictStructure termFrequenciesAcrossDocuments = documentTermFrequencies.reduce(new DocumentTermFrequencySumReducer());
 		//System.out.println("The sum of a term frequency all the documents is : " + termFrequenciesAcrossDocuments.getQueryTermDict());
 		
-	//Calculation for number of documents		
-		List<NewsArticle> documentsList = news.collectAsList();
+		//Retrieving number of documents after accumulator 
+		long numberofDocuments = numberofDocumentsAccumulator.value(); 
 		
-		Long numberofDocuments = (long)documentsList.size(); 
+			
 		
 	//Broadcasting these so we can use them in our dph scorer (these are 2 of the parameters)
 		Broadcast<Double> averageDocumentLengthInCorpus = JavaSparkContext.fromSparkContext(spark.sparkContext()).broadcast(averageDocumentLength);

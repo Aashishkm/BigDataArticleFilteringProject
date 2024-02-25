@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.spark.util.LongAccumulator;
 
 import org.apache.spark.api.java.function.MapFunction;
 //import org.apache.spark.sql.Row;
@@ -28,17 +29,23 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 	private transient TextPreProcessor processor;
 	
 	Broadcast<List<Query>> broadcastQueries;
+	LongAccumulator numDocsAccumulator;
 	
-	public DocumentFormatterMap(Broadcast<List<Query>> broadcastQueries) {
+	public DocumentFormatterMap(Broadcast<List<Query>> broadcastQueries, LongAccumulator numDocsAccumulator) {
 		this.broadcastQueries = broadcastQueries; 
+		this.numDocsAccumulator = numDocsAccumulator; 
 		
 	}
 	
-	// Pre-processing of documents and queries  using provided TextPreProcessor
+	//Pre-processing of documents and queries  using provided TextPreProcessor
 	//Tokenizing and 'title' and 'content'
+	//Also calculates term frequency for each query term, and stores it in a dictionary for each document
+	//Calculates and stores document length
+	//DocumentStructure Stores all of these -> (Term frequency dict, Document Length, Article Information) 
 	
 	@Override
 	public DocumentStructure call(NewsArticle value) throws Exception {
+		numDocsAccumulator.add(1); 
 	
 		if (processor==null) processor = new TextPreProcessor();
 		
@@ -68,7 +75,7 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 				
 					tokenizedDocument.addAll(tokenizedContent); //adding tokenized paragraphs to our document
 				
-					paragraphCounter++; //incremenrt paragraphs counter
+					paragraphCounter++; //increment paragraphs counter
 				}
 			}
 					
@@ -77,7 +84,7 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 			}
 				
 		}
-		//Calculate the term frequency for each term? 
+		//Calculate the term frequency for each term, and store as a dictionary  
 		List<Query> queries = broadcastQueries.getValue(); 
 		List<String> terms;  
 		Map<String, List<Integer>> termFrequencyDict = new HashMap<>(); 
@@ -85,28 +92,20 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 
 		
 		for (int i = 0; i < queries.size(); i++) {
-			terms = queries.get(i).getQueryTerms(); 
-			//System.out.println(terms);
+			
+			terms = queries.get(i).getQueryTerms();
+			
 			for (int j = 0; j < terms.size(); j++) {
-				int termFrequency = Collections.frequency(tokenizedDocument, terms.get(j)); //using built in collections method 
 				
-				termsList.add(termFrequency); 
-				
-				
-				
+				int termFrequency = Collections.frequency(tokenizedDocument, terms.get(j)); //using built in collections method 				
+				termsList.add(termFrequency); 		
 			}
 			
-			termFrequencyDict.put(queries.get(i).getOriginalQuery(), termsList);
-			
+			termFrequencyDict.put(queries.get(i).getOriginalQuery(), termsList);	
 			termsList = new ArrayList<>(); 
-
 		}
 		
-		//System.out.println(termFrequencyDict);
-		
-		
-		
-		//Calculate the documentLength within this map 
+	    //Calculate the documentLength, and store it in our structure
 		documentLength = tokenizedDocument.size(); 
 		
 		DocumentStructure document = new DocumentStructure(id, tokenizedDocument, documentLength, termFrequencyDict, value); 
