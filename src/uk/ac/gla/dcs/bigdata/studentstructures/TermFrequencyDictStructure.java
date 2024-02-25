@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+//Our wrapper structure for encoding 
+//Wraps our term frequency dictionary  - (structure used in our reducer to get total term frequencies per query)
 public class TermFrequencyDictStructure implements Serializable {
 	/**
 	  Simple structure for managing term frequencies.

@@ -11,6 +11,8 @@ import uk.ac.gla.dcs.bigdata.providedstructures.ContentItem;
 import uk.ac.gla.dcs.bigdata.providedstructures.NewsArticle;
 import uk.ac.gla.dcs.bigdata.providedutilities.TextPreProcessor;
 
+//Main article processing structure
+//Has document Length, Article, tokenized information, and a term frequency Dictionary
 public class DocumentStructure implements Serializable {
 
 	/**
@@ -19,7 +21,6 @@ public class DocumentStructure implements Serializable {
 	private static final long serialVersionUID = -3674408047254280897L;
 	
 	String id; // unique article identifier
-	//String article_url; // url pointing to the online article
 	List<String> tokenizedDocument; //content after it has been modified (tokenized + concatenated) 	
 	int documentLength;
 	NewsArticle article; 

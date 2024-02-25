@@ -2,6 +2,7 @@ package uk.ac.gla.dcs.bigdata.studentfunctions;
 
 import org.apache.spark.api.java.function.ReduceFunction;
 
+//Sums all document lengths to be used for average document length calculation
 public class DocumentLengthSumReducer implements ReduceFunction<Integer>{ 
 	
 

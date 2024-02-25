@@ -8,7 +8,7 @@ import uk.ac.gla.dcs.bigdata.providedstructures.NewsArticle;
 import uk.ac.gla.dcs.bigdata.providedstructures.Query;
 
 
-
+//Our Structure for storing DPH score and article information
 public class DPHStructure implements Serializable{
 	/**
 	 Structure for the DPH scorehaving the id, article, a score map with query and score.
@@ -16,8 +16,7 @@ public class DPHStructure implements Serializable{
 	private static final long serialVersionUID = 4517819071539280730L;
 	
 	String id; // unique article identifier
-	//String article_url; // url pointing to the online article
-	 //content after it has been modified (tokenized + concatenated) 	
+	//String article_url; 
 	// int dphScore; 
 	NewsArticle article;
 	Map<Query, Double> dphScoreDict; 

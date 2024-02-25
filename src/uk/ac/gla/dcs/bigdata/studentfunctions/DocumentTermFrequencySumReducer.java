@@ -11,9 +11,8 @@ import org.apache.spark.api.java.function.ReduceFunction;
 
 import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencyDictStructure;
 
-//Reduce operation on term frequency data and aggregating the frequencies of the terms to a map
-//A map with the term, and number of frequencies of the terms.
-
+//Reducer that sums the term frequency data across all documents for each Query 
+//This is maintained through our custom Dicitonary structure (TermFrequencyDictStructure)
 public class DocumentTermFrequencySumReducer implements ReduceFunction<TermFrequencyDictStructure> {
 	
 	private static final long serialVersionUID = 504564822999825225L;
@@ -39,20 +38,20 @@ public class DocumentTermFrequencySumReducer implements ReduceFunction<TermFrequ
 			
 			for (int i = 0; i < q1WithinQueryTerms.size(); i++) {
 
-				int sum = (q1WithinQueryTerms.get(i) + q2WithinQueryTerms.get(i));
+				int sum = (q1WithinQueryTerms.get(i) + q2WithinQueryTerms.get(i)); 
 		
-		        returnWithinQueryTerms.add(sum);
+		        returnWithinQueryTerms.add(sum); //adding the summed term frequency to our new list
 				
 			}	
 
 
-			returnTermFrequencyList.put(key,returnWithinQueryTerms);
+			returnTermFrequencyList.put(key,returnWithinQueryTerms); //adding the summed term list to our new dictionary
 	
 			returnWithinQueryTerms = new ArrayList<>(); 
 					
 		}
 		
-		TermFrequencyDictStructure retTermFrequencySUM = new TermFrequencyDictStructure(returnTermFrequencyList); 
+		TermFrequencyDictStructure retTermFrequencySUM = new TermFrequencyDictStructure(returnTermFrequencyList); //wrapping our term sum dictionary in a class
 	
 		return retTermFrequencySUM;
 	} 

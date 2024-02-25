@@ -12,7 +12,8 @@ import org.apache.spark.api.java.function.MapFunction;
 import uk.ac.gla.dcs.bigdata.studentstructures.DocumentStructure;
 import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencyDictStructure;
 
-//Maps DocumentStructure to a Dictionary of Query and term frequencies that will be used for calculation of termFrequenciesAcrossDocuments
+//Maps DocumentStructure to a Dictionary of Query and term frequencies 
+//Will be used for calculation of respective termFrequenciesAcrossDocuments in our DocumentTermFrequencySumReducer
 public class DocumentStructureToTermsMap implements MapFunction<DocumentStructure, TermFrequencyDictStructure >{
 	
 	

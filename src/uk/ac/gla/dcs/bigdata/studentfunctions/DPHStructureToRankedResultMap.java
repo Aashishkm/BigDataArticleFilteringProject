@@ -12,7 +12,8 @@ import uk.ac.gla.dcs.bigdata.studentstructures.DPHStructure;
 public class DPHStructureToRankedResultMap implements MapFunction<DPHStructure, RankedResult> {
 
 	/**
-	  Output ranked result of articles based on the score for a given query 
+	  Converts our DPHStructure to Ranked result 
+	  Essentially separates of DPHstrucutre into multiple structures (a new RankedResult per query in a document)
 	 */
 	private static final long serialVersionUID = 2472120668545383514L;
 	Broadcast<Query> broadcastIndividualQuery; 
@@ -24,15 +25,15 @@ public class DPHStructureToRankedResultMap implements MapFunction<DPHStructure, 
 
 	@Override
 	public RankedResult call(DPHStructure value) throws Exception {
-		
+		//Broadcasting individual query to create structure for 
 		Query query = broadcastIndividualQuery.getValue(); 
 		
-		String id = value.getId(); //docid?
+		String id = value.getId(); //docid
 		NewsArticle article = value.getArticle(); //article
 		double score = value.getDphScoreDict().get(query); //score
 
 		RankedResult ranks = new RankedResult(id, article, score); 
-		// TODO Auto-generated method stub
+
 		return ranks;
 	}
 	

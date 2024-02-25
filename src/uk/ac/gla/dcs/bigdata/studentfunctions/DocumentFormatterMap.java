@@ -21,6 +21,12 @@ import uk.ac.gla.dcs.bigdata.providedstructures.Query;
 import uk.ac.gla.dcs.bigdata.providedutilities.TextPreProcessor;
 import uk.ac.gla.dcs.bigdata.studentstructures.DocumentStructure;
 
+//Our main mapping structure for articles - does the following: 
+//Pre-processing of documents and queries using provided TextPreProcessor
+//Tokenizing and 'title' and 'content'
+//Also calculates term frequency for each query term, and stores it in a dictionary for each document
+//Calculates and stores document length
+//DocumentStructure Stores all of these -> (Term frequency dict, Document Length, Article Information) 
 
 public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStructure> {
 	
@@ -36,12 +42,7 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 		this.numDocsAccumulator = numDocsAccumulator; 
 		
 	}
-	
-	//Pre-processing of documents and queries  using provided TextPreProcessor
-	//Tokenizing and 'title' and 'content'
-	//Also calculates term frequency for each query term, and stores it in a dictionary for each document
-	//Calculates and stores document length
-	//DocumentStructure Stores all of these -> (Term frequency dict, Document Length, Article Information) 
+
 	
 	@Override
 	public DocumentStructure call(NewsArticle value) throws Exception {
@@ -105,7 +106,7 @@ public class DocumentFormatterMap implements MapFunction<NewsArticle,DocumentStr
 			termsList = new ArrayList<>(); 
 		}
 		
-	    //Calculate the documentLength, and store it in our structure
+	    //Calculate the documentLength as well, and store it in our structure
 		documentLength = tokenizedDocument.size(); 
 		
 		DocumentStructure document = new DocumentStructure(id, tokenizedDocument, documentLength, termFrequencyDict, value); 

@@ -17,10 +17,12 @@ import uk.ac.gla.dcs.bigdata.studentstructures.DPHStructure;
 import uk.ac.gla.dcs.bigdata.studentstructures.DocumentStructure;
 import uk.ac.gla.dcs.bigdata.studentstructures.TermFrequencyDictStructure;
 
+//Maps our main DocumentStruture to a DPHStructure 
+//Calculates the DPHscore for each term, averages to compute query score
+//Stores this result in each document and as a dictionary
+//DPH structure has article, id, and the pdHScore Dictionary
 public class DocumentToDPHStructureMap implements MapFunction<DocumentStructure, DPHStructure>{
-    /**
-	 Scoring class using DPHScorer and DPHStructure.
-	 */
+    
 	private static final long serialVersionUID = -9045059317226215060L;
 
 
@@ -83,12 +85,7 @@ public class DocumentToDPHStructureMap implements MapFunction<DocumentStructure,
 					averagingList.add(m); 
 					continue; 
 				}
-				//System.out.println("Term Frequency for current: " + termFrequencyCurrentDocument);	
-				//System.out.println("total term Frequency: " + totalTermFrequencyInCorpus);
-				//System.out.println("current document legnth: " + currentDocumentLength);
-				//System.out.println("Average document length: " + averageDocumentLengthInCorpus);
-				//System.out.println("Total Documents in Corpus: " + totalDocsInCorpus);
-				
+
 				Double preScore = DPHScorer.getDPHScore(termFrequencyCurrentDocument, totalTermFrequencyInCorpus, currentDocumentLength, averageDocumentLengthInCorpus, totalDocsInCorpus);
 				//System.out.println("Total corresponding term score is: " + preScore);
 				averagingList.add(preScore); 
@@ -97,24 +94,19 @@ public class DocumentToDPHStructureMap implements MapFunction<DocumentStructure,
 			double adder = 0; 
 			
 			for (int p = 0; p < averagingList.size(); p++) {
-				adder = adder + averagingList.get(p); 			
+				adder = adder + averagingList.get(p); 	//averaging the score of the terms of each query
 			}
 			
 			Double score = adder/averagingList.size();
 			
-			dphScoreDict.put(queries.get(i), score);
+			dphScoreDict.put(queries.get(i), score); //storing each queries score 
 			
 			
 			
-			averagingList = new ArrayList<>(); 
+			averagingList = new ArrayList<>(); //resetting our averaging list 
 			
 		}
-		
-		/*
-		for (Double values : dphScoreDict.values()) {
-			System.out.println("Total corresponding term score is: " + values);
-		}
-		*/
+	
 		
 		DPHStructure dphStruct = new DPHStructure(id, article, dphScoreDict); 
 		
